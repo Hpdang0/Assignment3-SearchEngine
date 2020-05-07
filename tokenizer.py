@@ -17,11 +17,11 @@ class Tokenizer():
 
     def tokenize(self, text: str) -> [str]:
         token_list = []
-        soup = BeautifulSoup(text, features="html.parser")
+        soup = BeautifulSoup(text, features="lxml")
         ## using nltk tokenizer
         ## for debugging ( some words are joined togather my the parser )
-        print(soup.get_text(strip=True,separator = '').split())
-        list = rtk.tokenize(soup.get_text(strip=True,separator = ''))
+        print(soup.text.split())
+        list = rtk.tokenize(soup.text)
         for word in list:
             ## using nltk Porter Stemmer
             ## not sure if we should use only lower case as "Apple" is different from "apple"
