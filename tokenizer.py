@@ -2,10 +2,11 @@ from bs4 import BeautifulSoup
 
 ## please pip install nltk
 
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize,RegexpTokenizer
 from nltk.stem import PorterStemmer
 
 ps = PorterStemmer()
+rtk = RegexpTokenizer(r'\w+')
 
 class Tokenizer():
     stopwords = []
@@ -18,7 +19,9 @@ class Tokenizer():
         token_list = []
         soup = BeautifulSoup(text, features="html.parser")
         ## using nltk tokenizer
-        list = word_tokenize(soup.get_text(strip=True,separator = ''))
+        ## for debugging ( some words are joined togather my the parser )
+        print(soup.get_text(strip=True,separator = '').split())
+        list = rtk.tokenize(soup.get_text(strip=True,separator = ''))
         for word in list:
             ## using nltk Porter Stemmer
             ## not sure if we should use only lower case as "Apple" is different from "apple"
