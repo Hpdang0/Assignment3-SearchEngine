@@ -12,6 +12,7 @@ _CORPUS_PATH = '\\DEV'
 if __name__ == '__main__':
     index = defaultdict(list)
     doc_ids = defaultdict(int)
+    tokenizer = tokenizer.Tokenizer()
 
     current_doc_id = 0
 
