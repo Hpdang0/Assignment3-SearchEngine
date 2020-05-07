@@ -16,23 +16,23 @@ if __name__ == '__main__':
 
     current_doc_id = 0
 
-    for path, pathname, filenames in os.walk(os.getcwd() + _CORPUS_PATH):
+    for path, folder, filenames in os.walk(os.getcwd() + _CORPUS_PATH):
         current_doc_id += 1
         
         for filename in filenames:
             if filename.endswith('.gitignore'):
-                pass
+                continue
             
             # Parse JSON here
-            url, content = jsonparse.parse(filename)
+            url, content = jsonparse.parse(path + '\\' + filename)
             doc_ids[current_doc_id] = url
 
             # Tokenize Content
-            tokens = tokenizer.tokenize(content)
+            # tokens = tokenizer.tokenize(content)
 
             # Word Processing
-            tokens = wordprocess.process(tokens)
+            # tokens = wordprocess.process(tokens)
 
             # Indexing
-            for token in tokens:
-                index[token].append(current_doc_id)
+            # for token in tokens:
+                # index[token].append(current_doc_id)

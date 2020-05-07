@@ -1,6 +1,6 @@
 import json
 
-def parse(file: str) -> (str, str):
+def parse(file_path: str) -> (str, str):
     # Returns URL, Content
     pass
 
