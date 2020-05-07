@@ -29,6 +29,7 @@ if __name__ == '__main__':
 
             # Tokenize Content
             tokens = tokenizer.tokenize(content)
+            print(tokens)
             # Word Processing
             # tokens = wordprocess.process(tokens)
 
