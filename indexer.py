@@ -24,12 +24,11 @@ if __name__ == '__main__':
                 continue
             
             # Parse JSON here
-            url, content = jsonparse.parse(path + '\\' + filename)
+            url, content, encoding = jsonparse.parse(path + '\\' + filename)
             doc_ids[current_doc_id] = url
 
             # Tokenize Content
-            # tokens = tokenizer.tokenize(content)
-
+            tokens = tokenizer.tokenize(content)
             # Word Processing
             # tokens = wordprocess.process(tokens)
 

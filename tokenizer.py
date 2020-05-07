@@ -1,4 +1,4 @@
-import bs4
+from bs4 import BeautifulSoup
 
 class Tokenizer():
     stopwords = []
@@ -7,12 +7,16 @@ class Tokenizer():
     for word in lines:
         stopwords.append(word)
 
-    def tokenize(self, content: str) -> [str]:
+    def tokenize(self, text: str) -> [str]:
         token_list = []
-        for word in content:
+        soup = BeautifulSoup(text, features="html.parser")
+        list = soup.get_text(strip=True,separator = '').split()
+
+        for word in list:
             word = word.lower().strip("!@#$%^&*(),-_=+./:;''\\][`")
             if len(word) >3 :
                 if word not in self.stopwords:
                     if word not in token_list:
                         token_list.append(word)
+                        
         return token_list
