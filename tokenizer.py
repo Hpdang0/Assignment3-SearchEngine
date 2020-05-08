@@ -27,8 +27,7 @@ class Tokenizer():
             ## using nltk Porter Stemmer
             ## not sure if we should use only lower case as "Apple" is different from "apple"
             word = lm.lemmatize(word.lower())
-            if len(word) > 2 :
+            if len(word)in range(2,25):
                 if word not in self.stopwords:
-                    if word not in token_list:
-                        token_list.append(word)
+                    token_list.append(word)
         return token_list
