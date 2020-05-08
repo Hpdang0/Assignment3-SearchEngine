@@ -1,69 +1,65 @@
 import os
 from collections import defaultdict
-from tinydb import TinyDB, Query
-
+import sys
 
 import jsonparse
 import tokenizer
-import wordprocess
+import indexfiler
 
 _CORPUS_PATH = '\\DEV'
 
-class Pair:
-    def __init__(self, doc, amount = 0):
-        self.doc = doc
-        self.amount = amount
-    
-    def inc(self):
-        self.amount += 1
-
-    def show(self):
-        return '('+str(self.doc) + ', ' + str(self.amount) + ')'
-
-
 if __name__ == '__main__':
-    db = TinyDB('index.json') # this is the file with the index info, we will need another program to query
-    db.purge() # THIS CLEARS THE FILE !!! (we probably want it to be blank a the start)
-    index = {} # instead of default dict with list
-    doc_ids = defaultdict(int)
+    # Class setup
     tokenizer = tokenizer.Tokenizer()
-    threshhold = 5 # this is how many documents we go before writing to the file and clearing our local index
-    current_doc_id = 0
-
-    for path, folder, filenames in os.walk(os.getcwd() + _CORPUS_PATH):
-        for filename in filenames:
-            if filename.endswith('.gitignore'):
-                continue
-            
-            current_doc_id += 1
-
-            # Parse JSON here
-            url, content, encoding = jsonparse.parse(path + '\\' + filename)
-            doc_ids[current_doc_id] = url
-
-            # Tokenize Content
-            tokens = tokenizer.tokenize(content)
-            # print(tokens)
-            # Word Processing
-            # tokens = wordprocess.process(tokens)
-
-            # Indexing
-            # for token in tokens:
-                # index[token].append(current_doc_id)
-
-            for token in tokens:
-                # index[token].append(current_doc_id)
-                if token in index.keys():
-                    index[token].inc
-                else:
-                    index[token] = Pair(current_doc_id, 1)
-            
-        if current_doc_id >= threshhold:
-            threshhold += current_doc_id
-            for key in index.keys():
-                db.insert({'token' : key, 'tuple': index[key].show()}) # the 'token' will help us when we're searching tokens later
-            index.clear() # clearing the dict
+    filer = indexfiler.IndexFiler()
     
-    for key in index.keys(): # one last addition
-        db.insert({'token' : key, 'tuple': index[key].show()})
-    index.clear() # clearing the dict but it doesn't really matter at this point
+    # File Writing setup
+    current_tmp_index = 0
+    write_threshhold = 128 # this is how many documents we go before writing to the file and clearing our local index
+
+    # Helper variables
+    index = defaultdict(list)
+    doc_ids = defaultdict(int)
+    frequency = defaultdict(int)
+    
+    current_doc_id = 0
+    try:
+        for path, folder, filenames in os.walk(os.getcwd() + _CORPUS_PATH):
+            for filename in filenames:
+                frequency.clear()
+                if filename.endswith('.gitignore'):
+                    continue
+                
+                current_doc_id += 1
+                if current_doc_id % 100 == 0:
+                    print('Processed up to doc_id {} with index of size {}...'.format(current_doc_id, sys.getsizeof(index)))
+
+                # Parse JSON here
+                url, content, encoding = jsonparse.parse(path + '\\' + filename)
+                doc_ids[current_doc_id] = url
+
+                # Tokenize Content
+                tokens = tokenizer.tokenize(content)
+                
+                # Convert to indexable frequency
+                for token in tokens:
+                    frequency[token] += 1
+
+                # Add to index on memory
+                for token in frequency:
+                    index[token].append([current_doc_id, frequency[token]])
+
+                # Write after threshhold documents
+                # if current_doc_id >= write_threshhold * current_tmp_index:
+                if sys.getsizeof(index) >= 805339136:
+                    print('>> Writing tmp_{}.index with index of size {}'.format(current_tmp_index, sys.getsizeof(index)))
+                    
+                    filer.to_file(index, 'tmp_{}.index'.format(current_tmp_index))
+                    current_tmp_index += 1
+
+                    index.clear()
+    except Exception as e:
+        print('>> [ERROR] Writing tmp_{}.index with index of size {}'.format(current_tmp_index+1, sys.getsizeof(index)))
+        print(e)
+
+        filer.to_file(index, 'tmp_{}.index'.format(current_tmp_index+1))
