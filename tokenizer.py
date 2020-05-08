@@ -3,9 +3,10 @@ from bs4 import BeautifulSoup
 ## please pip install nltk
 
 from nltk.tokenize import word_tokenize,RegexpTokenizer
-from nltk.stem import PorterStemmer
+from nltk.stem import PorterStemmer,WordNetLemmatizer
 
 ps = PorterStemmer()
+lm = WordNetLemmatizer()
 rtk = RegexpTokenizer(r'\w+')
 
 class Tokenizer():
@@ -25,7 +26,7 @@ class Tokenizer():
         for word in list:
             ## using nltk Porter Stemmer
             ## not sure if we should use only lower case as "Apple" is different from "apple"
-            word = ps.stem(word.lower())
+            word = lm.lemmatize(word.lower())
             if len(word) > 2 :
                 if word not in self.stopwords:
                     if word not in token_list:
