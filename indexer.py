@@ -6,6 +6,8 @@ import jsonparse
 import tokenizer
 import indexfiler
 
+import time
+
 _CORPUS_PATH = '\\DEV'
 
 if __name__ == '__main__':
@@ -21,18 +23,21 @@ if __name__ == '__main__':
     index = defaultdict(list)
     doc_ids = defaultdict(int)
     frequency = defaultdict(int)
+    rem_filename = None
     
     current_doc_id = 0
     try:
+        start = time.time()
         for path, folder, filenames in os.walk(os.getcwd() + _CORPUS_PATH):
             for filename in filenames:
+                rem_filename = filename
                 frequency.clear()
                 if filename.endswith('.gitignore'):
                     continue
                 
                 current_doc_id += 1
                 if current_doc_id % 100 == 0:
-                    print('Processed up to doc_id {} with index of size {}...'.format(current_doc_id, sys.getsizeof(index)))
+                    print('{:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\n'.format(time.time() - start, current_doc_id, filename, sys.getsizeof(index)))
 
                 # Parse JSON here
                 url, content, encoding = jsonparse.parse(path + '\\' + filename)
@@ -59,7 +64,7 @@ if __name__ == '__main__':
 
                     index.clear()
     except Exception as e:
-        print('>> [ERROR] Writing tmp_{}.index with index of size {}'.format(current_tmp_index+1, sys.getsizeof(index)))
+        print('>> [ERROR] {:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\n'.format(time.time() - start, current_tmp_index+1, rem_filename, sys.getsizeof(index)))
         print(e)
 
         filer.to_file(index, 'tmp_{}.index'.format(current_tmp_index+1))
