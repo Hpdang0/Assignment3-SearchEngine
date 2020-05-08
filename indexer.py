@@ -12,7 +12,7 @@ _CORPUS_PATH = '\\DEV'
 
 
 if __name__ == '__main__':
-    db = TinyDB('index.json') # this is the file with the index info
+    db = TinyDB('index.json') # this is the file with the index info, we will need another program to query
     db.purge() # THIS CLEARS THE FILE !!! (we probably want it to be blank a the start)
     index = defaultdict(list)
     doc_ids = defaultdict(int)
