@@ -50,9 +50,8 @@ if __name__ == '__main__':
             threshhold += current_doc_id
             for key in index.keys():
                 db.insert({'token' : key, 'list': index[key]}) # the 'token' will help us when we're searching tokens later
-            index = {} # clearing the dict
+            index.clear() # clearing the dict
     
     for key in index.keys(): # one last addition
         db.insert({'token' : key, 'list': index[key]})
-    index = {} # clearing the dict but it doesn't really matter at this point
-        
+    index.clear() # clearing the dict but it doesn't really matter at this point
