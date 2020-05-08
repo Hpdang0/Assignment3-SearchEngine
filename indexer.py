@@ -28,24 +28,22 @@ if __name__ == '__main__':
     doc_ids = defaultdict(int)
     tokenizer = tokenizer.Tokenizer()
     threshhold = 5 # this is how many documents we go before writing to the file and clearing our local index
-
-
     current_doc_id = 0
 
     for path, folder, filenames in os.walk(os.getcwd() + _CORPUS_PATH):
-        current_doc_id += 1
-        
         for filename in filenames:
             if filename.endswith('.gitignore'):
                 continue
             
+            current_doc_id += 1
+
             # Parse JSON here
             url, content, encoding = jsonparse.parse(path + '\\' + filename)
             doc_ids[current_doc_id] = url
 
             # Tokenize Content
             tokens = tokenizer.tokenize(content)
-            print(tokens)
+            # print(tokens)
             # Word Processing
             # tokens = wordprocess.process(tokens)
 

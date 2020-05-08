@@ -20,7 +20,7 @@ class Tokenizer():
         soup = BeautifulSoup(text, features="lxml")
         ## using nltk tokenizer
         ## for debugging ( some words are joined togather my the parser )
-        print(soup.text.split())
+        # print(soup.text.split())
         list = rtk.tokenize(soup.text)
         for word in list:
             ## using nltk Porter Stemmer
