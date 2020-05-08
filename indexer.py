@@ -17,7 +17,7 @@ if __name__ == '__main__':
     
     # File Writing setup
     current_tmp_index = 0
-    write_threshhold = 128 # this is how many documents we go before writing to the file and clearing our local index
+    write_threshhold = 12582944 # this is how many documents we go before writing to the file and clearing our local index
 
     # Helper variables
     index = defaultdict(list)
@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
                 # Write after threshhold documents
                 # if current_doc_id >= write_threshhold * current_tmp_index:
-                if sys.getsizeof(index) >= 805339136:
+                if sys.getsizeof(index) >= write_threshhold:
                     print('>> Writing tmp_{}.index with index of size {}'.format(current_tmp_index, sys.getsizeof(index)))
                     
                     filer.to_file(index, 'tmp_{}.index'.format(current_tmp_index))
@@ -68,3 +68,6 @@ if __name__ == '__main__':
         print(e)
 
         filer.to_file(index, 'tmp_{}.index'.format(current_tmp_index+1))
+    
+    print('>> Writing tmp_{}.index with index of size {}'.format(current_tmp_index, sys.getsizeof(index)))
+    filer.to_file(index, 'tmp_{}.index'.format(current_tmp_index))
