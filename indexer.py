@@ -17,6 +17,7 @@ if __name__ == '__main__':
     
     # File Writing setup
     current_tmp_index = 0
+    current_tmp_ids = 0
     write_threshhold = 12582944 # this is how many documents we go before writing to the file and clearing our local index
 
     # Helper variables
@@ -59,15 +60,25 @@ if __name__ == '__main__':
                 if sys.getsizeof(index) >= write_threshhold:
                     print('>> Writing tmp_{}.index with index of size {}'.format(current_tmp_index, sys.getsizeof(index)))
                     
-                    filer.to_file(index, 'tmp_{}.index'.format(current_tmp_index))
+                    filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index))
                     current_tmp_index += 1
 
                     index.clear()
+
+                if sys.getsizeof(doc_ids) >= write_threshhold:
+                    print('>> Writing tmp_{}.ids with doc ids of size {}'.format(current_tmp_ids, sys.getsizeof(doc_ids)))
+
+                    filer.ids_to_file(doc_ids, 'tmp_{}.ids'.format(current_tmp_ids))
+                    current_tmp_ids += 1
+                    
     except Exception as e:
         print('>> [ERROR] {:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\n'.format(time.time() - start, current_tmp_index+1, rem_filename, sys.getsizeof(index)))
         print(e)
 
-        filer.to_file(index, 'tmp_{}.index'.format(current_tmp_index+1))
+        filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index+1))
     
     print('>> Writing tmp_{}.index with index of size {}'.format(current_tmp_index, sys.getsizeof(index)))
-    filer.to_file(index, 'tmp_{}.index'.format(current_tmp_index))
+    filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index))
+    
+    print('>> Writing tmp_{}.ids with doc ids of size {}'.format(current_tmp_ids, sys.getsizeof(doc_ids)))
+    filer.ids_to_file(doc_ids, 'tmp_{}.ids'.format(current_tmp_ids))
