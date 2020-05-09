@@ -23,7 +23,7 @@ def combine_indexes():
             print('Merging {} with final.index...'.format(file.name))
             filer.combine('final.index', file.name)
 
-if __name__ == '__main__2':
+if __name__ == '__main__':
     # Class setup
     tokenizer = tokenizer.Tokenizer()
     filer = indexfiler.IndexFiler()
