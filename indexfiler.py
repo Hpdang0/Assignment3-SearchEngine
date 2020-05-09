@@ -1,5 +1,3 @@
-from io import TextIOWrapper
-
 class IndexFiler():
     def __init__(self):
         pass
@@ -38,13 +36,13 @@ class IndexFiler():
 
     def combine(self, final_file_name:str, staged_filepath):
         stoppoint = 300
-        encoding = 'utf-8'
         i = 0
         staged_dict = dict()
-        for line in TextIOWrapper(staged_filepath, encoding):
-            key, posting = line.split('|')
-            postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
-            staged_dict[key.rstrip()] = postings_parsed
+        with open(staged_filepath, 'r', encoding='utf-8') as staged_file:
+            for line in staged_file:
+                key, posting = line.split('|')
+                postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
+                staged_dict[key.rstrip()] = postings_parsed
 
 
         tmp_dict = dict()
@@ -78,7 +76,7 @@ class IndexFiler():
         
         f1.close()
         f.close()
-        staged_filepath.close()
+        staged_file.close()
 
 
         

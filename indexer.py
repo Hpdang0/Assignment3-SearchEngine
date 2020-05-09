@@ -1,7 +1,6 @@
 import os
 from collections import defaultdict
 import sys
-import zipfile
 
 import jsonparse
 import tokenizer
@@ -17,11 +16,10 @@ if __name__ == '__main__':
     f = open("final.index", 'w')
     f.close()
 
-    zip= zipfile.ZipFile('indexes_4-8-2022_0433.zip', 'r')
-    file_list = zip.namelist() # list of files in the .zip (their names)
-    
-    for filename in file_list:
-        filer.combine('final.index', zip.open(filename))
+    file_list = os.scandir('.') # list of files in the directory (their names)
+    for file_name in file_list:
+        if 'tmp_' in file_name.name:
+            filer.combine('final.index', file_name.name)
 
     with open('final.index', 'r', encoding='utf-8') as f:
         for line in f:
@@ -89,10 +87,7 @@ if __name__ == '__main2__':
                     current_tmp_ids += 1
 
         
-        zip=zipfile.ZipFile('indexes_4-8-2022_0433.zip')
-        file_list = zip.namelist()
-        for filename in file_list:
-            print(filename)
+        #here is where we would put the "HELPER"
         #f.close()      
     except Exception as e:
         print('>> [ERROR] {:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\n'.format(time.time() - start, current_tmp_index+1, rem_filename, sys.getsizeof(index)))
