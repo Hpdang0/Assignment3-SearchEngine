@@ -1,4 +1,2 @@
 .vscode/
-__pycache__/jsonparse.cpython-38.pyc
-__pycache__/tokenizer.cpython-38.pyc
-__pycache__/wordprocess.cpython-38.pyc
+__pycache__/*
