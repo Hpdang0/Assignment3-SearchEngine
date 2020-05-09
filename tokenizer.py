@@ -16,9 +16,9 @@ class Tokenizer():
     for word in lines:
         stopwords.append(word)
 
-    def tokenize(self, text: str) -> [str]:
+    def tokenize(self, text: str, encoding: str) -> [str]:
         token_list = []
-        soup = BeautifulSoup(text, features="lxml")
+        soup = BeautifulSoup(text, features="lxml", from_encoding=encoding)
         ## using nltk tokenizer
         ## for debugging ( some words are joined togather my the parser )
         # print(soup.text.split())
@@ -29,5 +29,6 @@ class Tokenizer():
             word = lm.lemmatize(word.lower())
             if len(word)in range(2,25):
                 if word not in self.stopwords and not word.isnumeric():
+                    # print(word)
                     token_list.append(word)
         return token_list
