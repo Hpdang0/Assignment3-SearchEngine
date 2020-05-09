@@ -11,8 +11,7 @@ import time
 
 _CORPUS_PATH = '\\DEV'
 
-def combine_indexes():
-    print('Combining indexes...\n')
+def merge_indexes():
     filer = indexfiler.IndexFiler()
     f = open("final.index", 'w')
     f.close()
@@ -38,6 +37,8 @@ if __name__ == '__main__':
     doc_ids = defaultdict(int)
     frequency = defaultdict(int)
     rem_filename = None
+    unique_tokens = set()
+    total_unique_tokens = 0
     
     current_doc_id = 0
     try:
@@ -50,8 +51,7 @@ if __name__ == '__main__':
                     continue
                 
                 current_doc_id += 1
-                if current_doc_id % 100 == 0:
-                    print('{:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\n'.format(time.time() - start, current_doc_id, filename, sys.getsizeof(index)))
+                
 
                 # Parse JSON here
                 url, content, encoding = jsonparse.parse(path + '\\' + filename)
@@ -59,6 +59,9 @@ if __name__ == '__main__':
 
                 # Tokenize Content
                 tokens = tokenizer.tokenize(content)
+                for token in tokens:
+                    unique_tokens.add(token)
+                total_unique_tokens = len(unique_tokens)
                 
                 # Convert to indexable frequency
                 for token in tokens:
@@ -68,8 +71,11 @@ if __name__ == '__main__':
                 for token in frequency:
                     index[token].append([current_doc_id, frequency[token]])
 
-                # Write after threshhold documents
-                # if current_doc_id >= write_threshhold * current_tmp_index:
+                # Logging
+                if current_doc_id % 100 == 0:
+                    print('{:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\nUnique Tokens: {}\n'.format(time.time() - start, current_doc_id, filename, sys.getsizeof(index), total_unique_tokens))
+
+                # Write of index
                 if sys.getsizeof(index) >= write_threshhold:
                     print('>> Writing tmp_{}.index with index of size {}'.format(current_tmp_index, sys.getsizeof(index)))
                     
@@ -78,6 +84,7 @@ if __name__ == '__main__':
 
                     index.clear()
 
+                # Writing of doc_ids
                 if sys.getsizeof(doc_ids) >= write_threshhold:
                     print('>> Writing tmp_{}.ids with doc ids of size {}'.format(current_tmp_ids, sys.getsizeof(doc_ids)))
 
@@ -93,10 +100,15 @@ if __name__ == '__main__':
 
         filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index+1))
     
+    # Final Operations
     print('>> Writing tmp_{}.index with index of size {}'.format(current_tmp_index, sys.getsizeof(index)))
     filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index))
     
     print('>> Writing tmp_{}.ids with doc ids of size {}'.format(current_tmp_ids, sys.getsizeof(doc_ids)))
     filer.ids_to_file(doc_ids, 'tmp_{}.ids'.format(current_tmp_ids))
 
-    combine_indexes()
+    print('{:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\nUnique Tokens: {}\n'.format(time.time() - start, current_doc_id, filename, sys.getsizeof(index), total_unique_tokens))
+
+    # Merging of indexes
+    print('Merging indexes...\n')
+    merge_indexes()
