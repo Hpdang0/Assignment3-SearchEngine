@@ -11,21 +11,19 @@ import time
 
 _CORPUS_PATH = '\\DEV'
 
-if __name__ == '__main__':
+def combine_indexes():
+    print('Combining indexes...\n')
     filer = indexfiler.IndexFiler()
     f = open("final.index", 'w')
     f.close()
 
     file_list = os.scandir('.') # list of files in the directory (their names)
-    for file_name in file_list:
-        if 'tmp_' in file_name.name:
-            filer.combine('final.index', file_name.name)
+    for file in file_list:
+        if file.name.endswith('.index') and 'tmp_' in file.name:
+            print('Merging {} with final.index...'.format(file.name))
+            filer.combine('final.index', file.name)
 
-    with open('final.index', 'r', encoding='utf-8') as f:
-        for line in f:
-            print(line, '\n')
-
-if __name__ == '__main2__':
+if __name__ == '__main__2':
     # Class setup
     tokenizer = tokenizer.Tokenizer()
     filer = indexfiler.IndexFiler()
@@ -100,3 +98,5 @@ if __name__ == '__main2__':
     
     print('>> Writing tmp_{}.ids with doc ids of size {}'.format(current_tmp_ids, sys.getsizeof(doc_ids)))
     filer.ids_to_file(doc_ids, 'tmp_{}.ids'.format(current_tmp_ids))
+
+    combine_indexes()
