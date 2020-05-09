@@ -28,6 +28,6 @@ class Tokenizer():
             ## not sure if we should use only lower case as "Apple" is different from "apple"
             word = lm.lemmatize(word.lower())
             if len(word)in range(2,25):
-                if word not in self.stopwords:
+                if word not in self.stopwords and not word.isnumeric():
                     token_list.append(word)
         return token_list
