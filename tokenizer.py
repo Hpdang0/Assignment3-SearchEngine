@@ -16,7 +16,7 @@ class Tokenizer():
     for word in lines:
         stopwords.append(word)
 
-    def tokenize(self, text: str, encoding: str) -> [str]:
+    def tokenize_index(self, text: str, encoding: str) -> [str]:
         token_list = []
         soup = BeautifulSoup(text, features="lxml", from_encoding=encoding)
         ## using nltk tokenizer
@@ -32,3 +32,6 @@ class Tokenizer():
                     # print(word)
                     token_list.append(word)
         return token_list
+
+    def tokenize_query(self, text: str) -> [str]:
+        return []

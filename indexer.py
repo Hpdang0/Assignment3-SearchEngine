@@ -58,7 +58,7 @@ if __name__ == '__main__':
                 doc_ids[current_doc_id] = url
 
                 # Tokenize Content
-                tokens = tokenizer.tokenize(content, encoding)
+                tokens = tokenizer.tokenize_index(content, encoding)
                 for token in tokens:
                     unique_tokens.add(token)
                 total_unique_tokens = len(unique_tokens)
@@ -96,8 +96,7 @@ if __name__ == '__main__':
         #f.close()      
     except Exception as e:
         print('>> [ERROR] {:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\n'.format(time.time() - start, current_doc_id, rem_filename, sys.getsizeof(index)))
-        # print(e + '\n')
-        raise(e)
+        print(e + '\n')
 
         filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index+1))
     

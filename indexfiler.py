@@ -81,9 +81,9 @@ class IndexFiler():
 
         
 
-filer = IndexFiler()
+# filer = IndexFiler()
 
-# d = filer.ids_from_file('test.txt')
-d = {1: 'test.com', 2: 'test2.com', 3: 'test3.com'}
+# # d = filer.ids_from_file('test.txt')
+# d = {1: 'test.com', 2: 'test2.com', 3: 'test3.com'}
 
-filer.ids_to_file(d, 'test.txt')
+# filer.ids_to_file(d, 'test.txt')
