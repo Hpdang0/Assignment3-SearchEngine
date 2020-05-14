@@ -26,7 +26,7 @@ class Tokenizer():
         for word in list:
             ## using nltk Porter Stemmer
             ## not sure if we should use only lower case as "Apple" is different from "apple"
-            word = lm.lemmatize(word.lower())
+            word = ps.stem(word.lower())
             if len(word)in range(2,25):
                 if word not in self.stopwords and not word.isnumeric():
                     # print(word)
@@ -34,4 +34,10 @@ class Tokenizer():
         return token_list
 
     def tokenize_query(self, text: str) -> [str]:
-        return []
+        list = rtk.tokenize(text)
+        token_list = []
+        for word in list:
+            word = ps.stem(word.lower())
+            token_list.append(word)
+            print(word)
+        return token_list
