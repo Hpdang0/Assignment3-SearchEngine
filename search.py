@@ -7,4 +7,17 @@ class Search():
 
     def search(self, tokens: [str]) -> [str]:
         # type r: list of urls
-        return []
+        result_list = []
+        index_dict = dict()
+        with open("final.index", 'r', encoding='utf-8') as file:
+            for line in file:
+                key, posting = line.split('|')
+                postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
+                index_dict[key.rstrip()] = postings_parsed
+            for token in tokens:
+                list = []
+                list.append(token)
+                for x in index_dict[token]:
+                    list.append(x[0])                
+                result_list.append(list)
+        return result_list
