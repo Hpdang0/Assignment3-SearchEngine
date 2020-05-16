@@ -112,3 +112,7 @@ if __name__ == '__main__':
     # Merging of indexes
     print('Merging indexes...\n')
     merge_indexes()
+
+    #queries = {"hey": []}
+
+    # after we have merged we can hypothetically get a list
