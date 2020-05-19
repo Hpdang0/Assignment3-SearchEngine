@@ -24,6 +24,8 @@ class Tokenizer():
         # print(soup.text.split())
         list = rtk.tokenize(soup.text)
         for word in list:
+            if word in self.stopwords:
+                continue
             ## using nltk Porter Stemmer
             ## not sure if we should use only lower case as "Apple" is different from "apple"
             word = ps.stem(word.lower())
@@ -37,6 +39,8 @@ class Tokenizer():
         list = rtk.tokenize(text)
         token_list = []
         for word in list:
+            if word in self.stopwords:
+                continue
             word = ps.stem(word.lower())
             if len(word)in range(2,25):
                 if word not in self.stopwords and not word.isnumeric():
