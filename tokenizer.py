@@ -38,6 +38,8 @@ class Tokenizer():
         token_list = []
         for word in list:
             word = ps.stem(word.lower())
-            token_list.append(word)
-            print(word)
+            if len(word)in range(2,25):
+                if word not in self.stopwords and not word.isnumeric():
+                    token_list.append(word)
+            # print(word)
         return token_list
