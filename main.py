@@ -11,7 +11,7 @@ def ensure_legal(i: str) -> bool:
         return False
     return True
 
-if __name__ == '__main__':
+if __name__ == '__main2__':
     tokenizer = tokenizer.Tokenizer()
     search = search.Search('final.index', 'final.ids')
     
