@@ -21,6 +21,7 @@ class IndexFiler():
                 file.write('{key} | {posting_str}\n'.format(key=key, posting_str=posting_str))
 
     def ids_from_file(self, filepath: str) -> dict:
+        # Retrieves the doc_id:url pair and return a dict of it
         ids_dict = dict()
         with open(filepath, 'r', encoding='utf-8') as file:
             for line in file:
@@ -30,6 +31,7 @@ class IndexFiler():
         return ids_dict
 
     def ids_to_file(self, ids:dict, filepath: str) -> dict:
+        # Writes a doc_ids:url pair to a file
         with open(filepath, 'w', encoding='utf-8') as file:
             for id, url in ids.items():
                 file.write('{} {}\n'.format(id, url))
@@ -77,6 +79,43 @@ class IndexFiler():
         f1.close()
         f.close()
         staged_file.close()
+
+
+    def bsearch_file(self, path, query):
+    # Given a file path and a query, perform a binary search and its posting
+        with open(path, 'r') as file:
+            lo = 0
+            file.seek(0, 2)
+            hi = file.tell() - 1
+            mid = (lo+hi) >> 1
+
+            return self._bsearch(file, query, lo, hi, mid).split(' | ')[2]
+
+
+    def _bsearch(self, file, query, lo, hi, mid):
+    # Recursive binary search on a line-sorted text file
+        if lo >= hi:                    # If true, we know that it's not in the list 
+            return None
+
+        if mid > 0:                     # If mid turns out to have truncated to 0, then we need to be sure not to read forward, but go backwards
+            file.seek(mid - 1)          # When we seek, we could have seeked in the middle of a line,
+            file.readline()             # so read until a new line and instead start at the next line
+            mid_line = file.tell()
+        else:
+            mid_line = 0                # To ensure that we can still read the first line
+            file.seek(mid_line)
+
+        line = file.readline()          # Now that we are the start of an actual line, read it
+        token = line.split(' | ')[0]    # and parse it to only get the token
+
+        if token == query:              # If it's an exact match, it's what we're looking for
+            return line
+        
+        if query > line:                # If true, b-search upper section
+            return self._bsearch(file, query, mid+1, hi, (mid+hi) >> 1)
+
+        if query < line:                # If true, b-search lower section
+            return self._bsearch(file, query, lo, mid, (lo+mid) >> 1)
 
 
         
