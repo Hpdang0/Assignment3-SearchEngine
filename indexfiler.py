@@ -89,7 +89,7 @@ class IndexFiler():
             hi = file.tell() - 1
             mid = (lo+hi) >> 1
 
-            return self._bsearch(file, query, lo, hi, mid).split(' | ')[2]
+            return self._bsearch(file, query, lo, hi, mid)
 
 
     def _bsearch(self, file, query, lo, hi, mid):
@@ -109,6 +109,7 @@ class IndexFiler():
         token = line.split(' | ')[0]    # and parse it to only get the token
 
         if token == query:              # If it's an exact match, it's what we're looking for
+            # print(line[:20])
             return line
         
         if query > line:                # If true, b-search upper section

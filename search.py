@@ -1,4 +1,5 @@
 from collections import defaultdict
+import indexfiler
 
 class Search():
     def __init__(self, index_path: str, ids_path: str):
@@ -19,12 +20,22 @@ class Search():
     def search(self, tokens: [str]) -> [str]:
         # type r: list of urls
         #result_list = []
+        filer = indexfiler.IndexFiler()
         index_dict = dict()
-        with open("final.index", 'r', encoding='utf-8') as file:
-            for line in file:
-                key, posting = line.split('|')
-                postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
-                index_dict[key.rstrip()] = postings_parsed
+        # with open("final.index", 'r', encoding='utf-8') as file:
+        #     for line in file:
+        #         key, posting = line.split('|')
+        #         postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
+        #         index_dict[key.rstrip()] = postings_parsed
+        lines = []
+
+        for token in tokens:
+            lines.append(filer.bsearch_file('final.index', token))
+
+        for line in lines:
+            key, posting = line.split(' | ')
+            postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
+            index_dict[key.rstrip()] = postings_parsed
         
         sorted_tokens = sorted(tokens, key = lambda token: len(index_dict[token])) # sorted by amount of associated docIDs
         #intersection_docs = set()
