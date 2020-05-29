@@ -10,7 +10,7 @@ from collections import defaultdict
 
 ps = PorterStemmer()
 lm = WordNetLemmatizer()
-rtk = RegexpTokenizer(r'\w+')
+rtk = RegexpTokenizer(r'[a-zA-Z0-9]+')
 
 # These values will be added to the tokens as frequency
 WEIGHT_P = 1
