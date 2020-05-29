@@ -66,7 +66,7 @@ class Search():
 
         results_scored = results_scored[:5]
         doc_ids = dict()
-        with open("tmp_0.ids", 'r', encoding='utf-8') as file:
+        with open("final.ids", 'r', encoding='utf-8') as file:
             for line in file:
                 lis = line.split(' ', 1)
                 doc_ids[int(lis[0])] = lis[1]

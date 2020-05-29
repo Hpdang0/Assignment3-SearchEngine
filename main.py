@@ -116,7 +116,7 @@ def ensure_legal(i: str) -> bool:
 
 if __name__ == '__main__':
     max_doc_id = 0
-    with open("tmp_0.ids", 'r', encoding='utf-8') as file:
+    with open("final.ids", 'r', encoding='utf-8') as file:
         first_line = file.readline()
         for last_line in file:
             pass

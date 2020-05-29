@@ -17,6 +17,7 @@ def _compute_similarity(hash1, hash2):
     
     return similar/total_size
 
+
 def create_simhash(words_dict):
     hash_digest_size = 64
     
@@ -39,11 +40,6 @@ def create_simhash(words_dict):
             else:
                 weights[i] -= words_dict[word]
         
-        # print('>> Weightings: {}'.format(weights))
-
-    # print('>> Weightings: {}'.format(weights))
-    # print('>> Normalized Weightings: {}'.format(self.normalize_weights(weights)))
-    # print()
     return normalize_weights(weights)
 
 
