@@ -30,6 +30,9 @@ class Search():
     def search(self, tokens: [str]) -> [str]:
         # type r: list of urls
         #result_list = []
+        if len(tokens) == 0:
+            return None
+
         filer = indexfiler.IndexFiler()
         index_dict = dict()
         # with open("final.index", 'r', encoding='utf-8') as file:
@@ -49,7 +52,7 @@ class Search():
 
         for line in lines:
             key, posting = line.split('|')
-            postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
+            postings_parsed = [[int(p[0]), float(p[1])] for p in (pair.split(',') for pair in posting.split())]
             index_dict[key.rstrip()] = postings_parsed
         
         sorted_tokens = sorted(tokens, key = lambda token: len(index_dict[token])) # sorted by amount of associated docIDs
@@ -74,7 +77,7 @@ class Search():
         with open("final.ids", 'r', encoding='utf-8') as file:
             for line in file:
                 id, url = line.split()
-                doc_ids[id] = url
+                doc_ids[int(id)] = url
         
         final_answer = []
         for num in results_scored:

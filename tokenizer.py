@@ -98,15 +98,14 @@ class Tokenizer():
         return True
 
     def tokenize_query(self, text: str) -> [str]:
-        list = rtk.tokenize(text)
-        token_list = []
-        for word in list:
-            if word in self.stopwords:
+        stemmed_query = []
+        for word in text.split():
+            if word in self.stopwords or ALPHA_NUM.search(word) is None or word.isnumeric() or self.is_hex(word):
                 continue
-            word = ps.stem(word.lower())
+            ## using nltk Porter Stemmer
+            ## not sure if we should use only lower case as "Apple" is different from "apple"
+            stemmed = ps.stem(word.lower())
             if len(word)in range(2,25):
-                if word not in self.stopwords and not word.isnumeric():
-                    token_list.append(word)
-            # print(word)
-            print(token_list)
-        return token_list
+                stemmed_query.append(stemmed)
+        print('query: ' + "'" + stemmed + "'")
+        return stemmed_query

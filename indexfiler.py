@@ -7,8 +7,8 @@ class IndexFiler():
         index_dict = dict()
         with open(filepath, 'r', encoding='utf-8') as file:
             for line in file:
-                key, posting = line.split('|')
-                postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
+                key, posting = line.split(' | ')
+                postings_parsed = [[int(p[0]), float(p[1])] for p in (pair.split(',') for pair in posting.split())]
                 index_dict[key.rstrip()] = postings_parsed    
         return index_dict
     
@@ -110,17 +110,15 @@ class IndexFiler():
             file.seek(mid_line)
 
         line = file.readline()          # Now that we are the start of an actual line, read it
-        print("'" + line.split(' | ')[0]+ "'")
-        token = line.split('|')[0]    # and parse it to only get the token
+        token = line.split(' | ')[0]    # and parse it to only get the token
 
         if token == query:              # If it's an exact match, it's what we're looking for
-            # print(line[:20])
             return line
         
-        if query > line:                # If true, b-search upper section
+        if query > token:                # If true, b-search upper section
             return self._bsearch(file, query, mid+1, hi, (mid+hi) >> 1)
 
-        if query < line:                # If true, b-search lower section
+        if query < token:                # If true, b-search lower section
             return self._bsearch(file, query, lo, mid, (lo+mid) >> 1)
 
 
