@@ -62,7 +62,8 @@ if __name__ == '__main__':
     # File Writing setup
     current_tmp_index = 0
     current_tmp_ids = 0
-    write_threshhold = 12582944 # this is how many documents we go before writing to the file and clearing our local index
+    write_threshhold = 196608
+    # write_threshhold = 12582944 # this is how many documents we go before writing to the file and clearing our local index
     # Helper variables
     index = defaultdict(list)
     doc_ids = defaultdict(int)
@@ -88,19 +89,20 @@ if __name__ == '__main__':
                     continue
                 
                 if not is_valid(url):
-                    print('\n[SKIPPING] URL is not valid: {}\n'.format(url))
+                    print('[SKIPPING] URL is not valid: {}\n'.format(url))
 
                 # Tokenize Content
                 frequency = tokenizer.tokenize_index(content, encoding)
                 if len(frequency) == 0:
                     continue
 
+                # print(frequency, '\n')
                 # -------------- Filtering done here
                 # Determine if indexing is worthwhile
                 low_value_page = False
                 if sum(frequency.values()) < LOW_VALUE_THRESHOLD:
                     low_value_page = True
-                    print('\n[SKIPPING] URL found to be of low value: \n{0} tokens\nURL: {1}\n'.format(sum(frequency.values()), url))
+                    # print('[SKIPPING] URL found to be of low value: {0}\n{1} with tokens...\n{2}\n'.format(sum(frequency.values()), url, frequency))
 
                 # Compare similarity to last 5 pages we crawled in
                 similar = False
