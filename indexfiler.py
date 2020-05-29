@@ -38,7 +38,7 @@ class IndexFiler():
         final_dict = dict()
         with open(staged_filepath, 'r', encoding='utf-8') as file_a:
             with open(staged_filepath1, 'r', encoding='utf-8') as file_b:
-                final_file = open('temp.index', 'w', encoding='utf-8')
+                final_file = open('final.index', 'w', encoding='utf-8')
                 lineA = file_a.readline()
                 lineB = file_b.readline()
                 
@@ -72,7 +72,7 @@ class IndexFiler():
                             postings_parsedB = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in postingB.split())]
                             final_dict[keyA.rstrip()] = postings_parsedA + postings_parsedB
                             #printdebug purpose
-                            #print("combining term", keyA)
+                            print("combining term", keyA)
                             posting_str = ' '.join(','.join(str(p) for p in pair) for pair in final_dict[keyA.rstrip()])
                             final_file.write('{key} | {posting_str}\n'.format(key=keyA, posting_str=posting_str))
                             final_dict.clear()
