@@ -26,9 +26,11 @@ def merge_indexes():
 
     file_list = os.scandir('.') # list of files in the directory (their names)
     for file in file_list:
-        if file.name.endswith('.index') and 'tmp_' in file.name:
-            print('Merging {} with final.index...'.format(file.name))
-            filer.combine('final.index', file.name)
+        count = 0
+        if file.name.endswith('.index') and 'tmp_{}.index'.format(0) in file.name:
+            print('Merging {} with final.index...'.format('tmp_{}.index'.format(current_tmp_index)))
+            filer.new_combine('final.index', 'tmp_{}.index'.format(count), 'tmp_{}.index'.format(count + 1))
+            count += 1
 
 
 def is_valid(url):
@@ -61,7 +63,6 @@ if __name__ == '__main__':
     current_tmp_index = 0
     current_tmp_ids = 0
     write_threshhold = 12582944 # this is how many documents we go before writing to the file and clearing our local index
-
     # Helper variables
     index = defaultdict(list)
     doc_ids = defaultdict(int)
