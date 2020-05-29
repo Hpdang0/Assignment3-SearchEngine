@@ -25,12 +25,11 @@ def merge_indexes():
     f.close()
 
     file_list = os.scandir('.') # list of files in the directory (their names)
-    for file in file_list:
-        count = 0
-        if file.name.endswith('.index') and 'tmp_{}.index'.format(0) in file.name:
-            print('Merging {} with final.index...'.format('tmp_{}.index'.format(current_tmp_index)))
-            filer.new_combine('final.index', 'tmp_{}.index'.format(count), 'tmp_{}.index'.format(count + 1))
-            count += 1
+    os.rename("tmp_0.index", "base.index")
+    for file in file_list: 
+        if file.name.endswith('.index') and 'tmp_' in file.name:
+            print('Merging {} with final.index...'.format(file.name))
+            filer.new_combine('final.index', 'base.index', file.name)
 
 
 def is_valid(url):
@@ -52,8 +51,11 @@ def is_valid(url):
         print ("TypeError for ", parsed)
         raise
 
-
 if __name__ == '__main__':
+    print('Merging indexes...\n')
+    merge_indexes()
+
+if __name__ == '__main1__':
     # Class setup
     tokenizer = tokenizer.Tokenizer()
     filer = indexfiler.IndexFiler()
