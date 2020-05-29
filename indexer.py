@@ -13,7 +13,7 @@ from similar import Similarity
 from urllib.parse import urlparse
 
 CORPUS_PATH = '\\DEV'
-LOW_VALUE_THRESHOLD = 20
+LOW_VALUE_THRESHOLD = 10
 SIMHASH_THRESH = 0.9
 
 _FRAGMENT = r'[#].*'
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     # File Writing setup
     current_tmp_index = 0
     current_tmp_ids = 0
-    write_threshhold = 196608
+    write_threshhold = 6291472
     # write_threshhold = 12582944 # this is how many documents we go before writing to the file and clearing our local index
     # Helper variables
     index = defaultdict(list)
@@ -102,7 +102,10 @@ if __name__ == '__main__':
                 low_value_page = False
                 if sum(frequency.values()) < LOW_VALUE_THRESHOLD:
                     low_value_page = True
-                    # print('[SKIPPING] URL found to be of low value: {0}\n{1} with tokens...\n{2}\n'.format(sum(frequency.values()), url, frequency))
+                    try:
+                        print('{0:.2f} [SKIPPING] URL found to be of low value: {1}\n{2} with tokens...\n{3}\n'.format(time.time() - start, sum(frequency.values()), url, frequency))
+                    except:
+                        print('{0:.2f} [SKIPPING] URL found to be of low value: {1}\n{2}\n'.format(time.time() - start, sum(frequency.values()), url))
 
                 # Compare similarity to last 5 pages we crawled in
                 similar = False
@@ -110,7 +113,7 @@ if __name__ == '__main__':
                     # print(frequency, url_token_pair[1], sep='\n')
                     if Similarity(frequency, url_token_pair[1], SIMHASH_THRESH):
                         similar = True
-                        print('\n[SKIPPING] Similarity found between these two urls. Skipping the second url...\n{0} with tokens...\n{1}\n\n{2} with tokens...\n{3}\n'.format(url_token_pair[0], url_token_pair[1], url, frequency))
+                        print('{:.2f} [SKIPPING] Similarity found between these two urls. Skipping the second url...\n{0} with tokens...\n{1}\n\n{2} with tokens...\n{3}\n'.format(time.time() - start, url_token_pair[0], url_token_pair[1], url, frequency))
                         break
                 # ------------------------ End filter
 
@@ -131,7 +134,7 @@ if __name__ == '__main__':
 
                     # Write of index
                     if sys.getsizeof(index) >= write_threshhold:
-                        print('\n>> Writing tmp_{}.index with index of size {}\n'.format(current_tmp_index, sys.getsizeof(index)))
+                        print('\n{:.2f} Writing tmp_{}.index with index of size {}\n'.format(time.time() - start, current_tmp_index, sys.getsizeof(index)))
                         
                         filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index))
                         current_tmp_index += 1
@@ -140,7 +143,7 @@ if __name__ == '__main__':
 
                     # Writing of doc_ids
                     if sys.getsizeof(doc_ids) >= write_threshhold:
-                        print('\n>> Writing final.ids with doc ids of size {}\n'.format(sys.getsizeof(doc_ids)))
+                        print('\n{:.2f} Writing final.ids with doc ids of size {}\n'.format(time.time() - start, sys.getsizeof(doc_ids)))
 
                         filer.ids_to_file(doc_ids, 'final.ids')
                         current_tmp_ids += 1
@@ -153,22 +156,22 @@ if __name__ == '__main__':
         #here is where we would put the "HELPER"
         #f.close()      
     except Exception as e:
-        print('>> [ERROR] {:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\n'.format(time.time() - start, current_doc_id, rem_filename, sys.getsizeof(index)))
+        print('{:.2f} [ERROR] Processed up to doc_id: {}\nName: {}\nIndex Size: {}\n'.format(time.time() - start, current_doc_id, rem_filename, sys.getsizeof(index)))
         print(e + '\n')
 
         filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index+1))
     
     # Final Operations
-    print('>> Writing tmp_{}.index with index of size {}'.format(current_tmp_index, sys.getsizeof(index)))
+    print('{:.2f} Writing tmp_{}.index with index of size {}'.format(time.time() - start, current_tmp_index, sys.getsizeof(index)))
     filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index))
     
-    print('>> Writing final.ids with doc ids of size {}'.format(sys.getsizeof(doc_ids)))
+    print('{:.2f} Writing final.ids with doc ids of size {}'.format(time.time() - start, sys.getsizeof(doc_ids)))
     filer.ids_to_file(doc_ids, 'final.ids')
 
     print('{:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\nUnique Tokens: {}\n'.format(time.time() - start, current_doc_id, url, sys.getsizeof(index), total_unique_tokens))
 
     # Merging of indexes
-    print('Merging indexes...\n')
+    print('{:.2f} Merging indexes...\n'.format(time.time() - start))
     merge_indexes()
 
     #queries = {"hey": []}

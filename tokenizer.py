@@ -21,6 +21,9 @@ WEIGHT_ITALICIZED = 1.2
 WEIGHT_LIST = 1
 WEIGHT_HYPERLINK = 1.5
 
+_ALPHA_NUM = r'^[a-zA-Z0-9]*$' 
+ALPHA_NUM = re.compile(_ALPHA_NUM)
+
 class Tokenizer():
     stopwords = []
     file = open("stopwords.txt",'r')
@@ -76,7 +79,7 @@ class Tokenizer():
 
         stemmed_frequency = defaultdict(int)
         for word, freq in frequency.items():
-            if word in self.stopwords or word.isnumeric() or not word.isalpha():
+            if word in self.stopwords or ALPHA_NUM.search(word) is None or word.isnumeric() or self.is_hex(word):
                 continue
             ## using nltk Porter Stemmer
             ## not sure if we should use only lower case as "Apple" is different from "apple"
@@ -86,6 +89,13 @@ class Tokenizer():
 
         # print(stemmed_frequency)
         return stemmed_frequency
+
+    def is_hex(self, s):
+        for c in s:
+            if not c.isnumeric() and c not in 'abcdefABCDEF':
+                return False
+
+        return True
 
     def tokenize_query(self, text: str) -> [str]:
         list = rtk.tokenize(text)

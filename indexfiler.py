@@ -68,11 +68,11 @@ class IndexFiler():
                             lineB = file_b.readline()
                         #Checking if A and B are the same and combining them
                         elif keyA == keyB:
-                            postings_parsedA = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in postingA.split())]
-                            postings_parsedB = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in postingB.split())]
+                            postings_parsedA = [[int(p[0]), float(p[1])] for p in (pair.split(',') for pair in postingA.split())]
+                            postings_parsedB = [[int(p[0]), float(p[1])] for p in (pair.split(',') for pair in postingB.split())]
                             final_dict[keyA.rstrip()] = postings_parsedA + postings_parsedB
                             #printdebug purpose
-                            print("combining term", keyA)
+                            # print("combining term", keyA)
                             posting_str = ' '.join(','.join(str(p) for p in pair) for pair in final_dict[keyA.rstrip()])
                             final_file.write('{key} | {posting_str}\n'.format(key=keyA, posting_str=posting_str))
                             final_dict.clear()
