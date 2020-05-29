@@ -12,7 +12,7 @@ import time
 from similar import Similarity
 from urllib.parse import urlparse
 
-CORPUS_PATH = '\\DEV'
+CORPUS_PATH = '\\TEST'
 LOW_VALUE_THRESHOLD = 10
 SIMHASH_THRESH = 0.9
 

@@ -13,16 +13,20 @@ lm = WordNetLemmatizer()
 rtk = RegexpTokenizer(r'[a-zA-Z0-9]+')
 
 # These values will be added to the tokens as frequency
-WEIGHT_P = 1
-WEIGHT_H02 = 2
-WEIGHT_H36 = 1.4
-WEIGHT_BOLD = 1.3
-WEIGHT_ITALICIZED = 1.2
-WEIGHT_LIST = 1
-WEIGHT_HYPERLINK = 1.5
+WEIGHT_H02 = 1
+WEIGHT_H36 = 2
+WEIGHT_BOLD = 3
+WEIGHT_HYPERLINK = 4
+WEIGHT_ITALICIZED = 5
+WEIGHT_LIST = 6
+WEIGHT_NORMAL = None
 
 _ALPHA_NUM = r'^[a-zA-Z0-9]*$' 
 ALPHA_NUM = re.compile(_ALPHA_NUM)
+
+class pair(list):
+    def __init__(self):
+        super().__init__([0, ''])
 
 class Tokenizer():
     stopwords = []
@@ -36,10 +40,11 @@ class Tokenizer():
             text = iter.get_text(strip=True,separator = ' ')
             for word in text.split():
                 # print(word, mod)
-                freq[word] += mod
+                freq[word][0] += 1
+                freq[word][1] += str(mod)
 
     def tokenize_index(self, text: str, encoding: str) -> [str]:
-        frequency = defaultdict(int)
+        frequency = defaultdict(pair)
         soup = BeautifulSoup(text, features="lxml", from_encoding=encoding)
         ## using nltk tokenizer
         ## for debugging ( some words are joined togather my the parser )
