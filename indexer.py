@@ -19,8 +19,8 @@ def merge_indexes():
     file_list = os.scandir('.') # list of files in the directory (their names)
     for file in file_list:
         if file.name.endswith('.index') and 'tmp_' in file.name:
-            print('Merging {} with final.index...'.format(file.name))
-            filer.combine('final.index', file.name)
+            print('Merging {} with final.index...'.format('tmp_{}.index'.format(current_tmp_index)))
+            filer.new_combine('final.index', 'tmp_{}.index'.format(current_tmp_index), 'tmp_{}.index'.format(current_tmp_index))
 
 if __name__ == '__main__':
     # Class setup
