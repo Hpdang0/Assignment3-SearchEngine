@@ -45,8 +45,11 @@ if __name__ == '__main__':
         print('[Query took {:.3f} seconds]'.format(end - start))
 
         # Print the results
-        print('Results:')
-        for url in results:
-            print(url)
+        if results is None:
+            print('No results found!')
+        else:
+            print('Results:')
+            for url in results:
+                print(url)
 
         print()

@@ -52,8 +52,8 @@ class IndexFiler():
                         final_file.write(lineA)
                         lineA = file_a.readline()
                     elif '|' in lineA:
-                        keyA, postingA = lineA.split('|')
-                        keyB, postingB = lineB.split('|')
+                        keyA, postingA = lineA.split(' | ')
+                        keyB, postingB = lineB.split(' | ')
                         #Checking if A is the earlier term & adding it into index
                         if keyA < keyB:
                             #print debug purpose
@@ -84,6 +84,7 @@ class IndexFiler():
                         lineA = file_a.readline()
                         lineB = file_b.readline()
 
+
     def bsearch_file(self, path, query):
     # Given a file path and a query, perform a binary search and its posting
         with open(path, 'r') as file:
@@ -109,7 +110,8 @@ class IndexFiler():
             file.seek(mid_line)
 
         line = file.readline()          # Now that we are the start of an actual line, read it
-        token = line.split(' | ')[0]    # and parse it to only get the token
+        print("'" + line.split(' | ')[0]+ "'")
+        token = line.split('|')[0]    # and parse it to only get the token
 
         if token == query:              # If it's an exact match, it's what we're looking for
             # print(line[:20])

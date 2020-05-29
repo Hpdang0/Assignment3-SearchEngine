@@ -85,7 +85,7 @@ class Tokenizer():
             ## not sure if we should use only lower case as "Apple" is different from "apple"
             stemmed = ps.stem(word.lower())
             if len(word)in range(2,25):
-                stemmed_frequency[stemmed] += freq
+                stemmed_frequency[stemmed.rstrip()] += freq
 
         # print(stemmed_frequency)
         return stemmed_frequency
@@ -108,4 +108,5 @@ class Tokenizer():
                 if word not in self.stopwords and not word.isnumeric():
                     token_list.append(word)
             # print(word)
+            print(token_list)
         return token_list

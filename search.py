@@ -40,10 +40,15 @@ class Search():
         lines = []
 
         for token in tokens:
-            lines.append(filer.bsearch_file('final.index', token))
+            line = filer.bsearch_file('final.index', token)
+            if line is not None:
+                lines.append(line)
+            
+        if len(lines) == 0:
+            return None
 
         for line in lines:
-            key, posting = line.split(' | ')
+            key, posting = line.split('|')
             postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
             index_dict[key.rstrip()] = postings_parsed
         
@@ -68,8 +73,8 @@ class Search():
         doc_ids = dict()
         with open("final.ids", 'r', encoding='utf-8') as file:
             for line in file:
-                lis = line.split(' ', 1)
-                doc_ids[int(lis[0])] = lis[1]
+                id, url = line.split()
+                doc_ids[id] = url
         
         final_answer = []
         for num in results_scored:

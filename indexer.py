@@ -130,11 +130,11 @@ if __name__ == '__main__':
 
                     # Logging
                     if current_doc_id % 100 == 0:
-                        print('\n{:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\nUnique Tokens: {}\n'.format(time.time() - start, current_doc_id, url, sys.getsizeof(index), total_unique_tokens))
+                        print('{:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\nUnique Tokens: {}\n'.format(time.time() - start, current_doc_id, url, sys.getsizeof(index), total_unique_tokens))
 
                     # Write of index
                     if sys.getsizeof(index) >= write_threshhold:
-                        print('\n{:.2f} Writing tmp_{}.index with index of size {}\n'.format(time.time() - start, current_tmp_index, sys.getsizeof(index)))
+                        print('{:.2f} Writing tmp_{}.index with index of size {}\n'.format(time.time() - start, current_tmp_index, sys.getsizeof(index)))
                         
                         filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index))
                         current_tmp_index += 1
@@ -143,7 +143,7 @@ if __name__ == '__main__':
 
                     # Writing of doc_ids
                     if sys.getsizeof(doc_ids) >= write_threshhold:
-                        print('\n{:.2f} Writing final.ids with doc ids of size {}\n'.format(time.time() - start, sys.getsizeof(doc_ids)))
+                        print('{:.2f} Writing final.ids with doc ids of size {}\n'.format(time.time() - start, sys.getsizeof(doc_ids)))
 
                         filer.ids_to_file(doc_ids, 'final.ids')
                         current_tmp_ids += 1
