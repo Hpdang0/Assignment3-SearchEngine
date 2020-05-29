@@ -16,7 +16,7 @@ class IndexFiler():
     def index_to_file(self, index:dict, filepath:str):
     # Writes index to file so it can be later parsed with from_file
         with open(filepath, 'w', encoding='utf-8') as file:
-            for key, posting in index.items():
+            for key, posting in sorted(index.items(), lambda item: item[0]):
                 posting_str = ' '.join(','.join(str(p) for p in pair) for pair in posting)
                 file.write('{key} | {posting_str}\n'.format(key=key, posting_str=posting_str))
 

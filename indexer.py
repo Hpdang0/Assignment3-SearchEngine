@@ -10,6 +10,7 @@ from io import TextIOWrapper
 import cache
 import time
 from similar import Similarity
+from urllib.parse import urlparse
 
 CORPUS_PATH = '\\DEV'
 LOW_VALUE_THRESHOLD = 20
@@ -29,11 +30,32 @@ def merge_indexes():
             print('Merging {} with final.index...'.format(file.name))
             filer.combine('final.index', file.name)
 
+
+def is_valid(url):
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in set(["http", "https"]):
+            return False
+        return not re.match(
+            r".*\.(css|js|bmp|gif|jpe?g|ico"
+            + r"|png|tiff?|mid|mp2|mp3|mp4"
+            + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
+            + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
+            + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
+            + r"|epub|dll|cnf|tgz|sha1"
+            + r"|thmx|mso|arff|rtf|jar|csv"
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz"
+            + r"|ppsx)$", parsed.path.lower())
+    except TypeError:
+        print ("TypeError for ", parsed)
+        raise
+
+
 if __name__ == '__main__':
     # Class setup
     tokenizer = tokenizer.Tokenizer()
     filer = indexfiler.IndexFiler()
-    cache = cache.Cache()
+    cache = cache.Cache(3)
     
     # File Writing setup
     current_tmp_index = 0
@@ -63,16 +85,21 @@ if __name__ == '__main__':
 
                 if FRAGMENT.search(url) is not None:
                     continue
+                
+                if not is_valid(url):
+                    print('\n[SKIPPING] URL is not valid: {}\n'.format(url))
 
                 # Tokenize Content
                 frequency = tokenizer.tokenize_index(content, encoding)
+                if len(frequency) == 0:
+                    continue
 
                 # -------------- Filtering done here
                 # Determine if indexing is worthwhile
                 low_value_page = False
                 if sum(frequency.values()) < LOW_VALUE_THRESHOLD:
                     low_value_page = True
-                    print('[SKIPPING] URL found to be of low value: \n{0} tokens\nURL: {1}'.format(sum(frequency.values()), url))
+                    print('\n[SKIPPING] URL found to be of low value: \n{0} tokens\nURL: {1}\n'.format(sum(frequency.values()), url))
 
                 # Compare similarity to last 5 pages we crawled in
                 similar = False
@@ -80,7 +107,7 @@ if __name__ == '__main__':
                     # print(frequency, url_token_pair[1], sep='\n')
                     if Similarity(frequency, url_token_pair[1], SIMHASH_THRESH):
                         similar = True
-                        print('[SKIPPING] Similarity found between these two urls. Skipping the second url...\n{0}\n{1}'.format(url_token_pair[0], url))
+                        print('\n[SKIPPING] Similarity found between these two urls. Skipping the second url...\n{0} with tokens...\n{1}\n\n{2} with tokens...\n{3}\n'.format(url_token_pair[0], url_token_pair[1], url, frequency))
                         break
                 # ------------------------ End filter
 
@@ -97,11 +124,11 @@ if __name__ == '__main__':
 
                     # Logging
                     if current_doc_id % 100 == 0:
-                        print('{:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\nUnique Tokens: {}\n'.format(time.time() - start, current_doc_id, url, sys.getsizeof(index), total_unique_tokens))
+                        print('\n{:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\nUnique Tokens: {}\n'.format(time.time() - start, current_doc_id, url, sys.getsizeof(index), total_unique_tokens))
 
                     # Write of index
                     if sys.getsizeof(index) >= write_threshhold:
-                        print('>> Writing tmp_{}.index with index of size {}'.format(current_tmp_index, sys.getsizeof(index)))
+                        print('\n>> Writing tmp_{}.index with index of size {}\n'.format(current_tmp_index, sys.getsizeof(index)))
                         
                         filer.index_to_file(index, 'tmp_{}.index'.format(current_tmp_index))
                         current_tmp_index += 1
@@ -110,13 +137,13 @@ if __name__ == '__main__':
 
                     # Writing of doc_ids
                     if sys.getsizeof(doc_ids) >= write_threshhold:
-                        print('>> Writing final.ids with doc ids of size {}'.format(sys.getsizeof(doc_ids)))
+                        print('\n>> Writing final.ids with doc ids of size {}\n'.format(sys.getsizeof(doc_ids)))
 
                         filer.ids_to_file(doc_ids, 'final.ids')
                         current_tmp_ids += 1
+                    
+                    current_doc_id += 1
                 
-                # Prepare for next document
-                current_doc_id += 1
                 frequency.clear()
 
         
