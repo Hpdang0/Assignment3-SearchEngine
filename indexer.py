@@ -20,19 +20,18 @@ _FRAGMENT = r'[#].*'
 FRAGMENT = re.compile(_FRAGMENT)
 
 def merge_indexes():
-    pass
-    # filer = indexfiler.IndexFiler()
-    # f = open("final.index", 'w')
-    # f.close()
+    filer = indexfiler.IndexFiler()
+    f = open("final.index", 'w')
+    f.close()
 
-    # file_list = os.scandir('.') # list of files in the directory (their names)
-    # if os.path.exists('base.index'):
-    #     os.remove('base.index')
-    # os.rename("tmp_0.index", "base.index")
-    # for file in file_list: 
-    #     if file.name.endswith('.index') and 'tmp_' in file.name:
-    #         print('Merging {} with final.index...'.format(file.name))
-    #         filer.new_combine('final.index', 'base.index', file.name)
+    file_list = os.scandir('.') # list of files in the directory (their names)
+    if os.path.exists('base.index'):
+        os.remove('base.index')
+    os.rename("tmp_0.index", "base.index")
+    for file in file_list: 
+        if file.name.endswith('.index') and 'tmp_' in file.name:
+            print('Merging {} with final.index...'.format(file.name))
+            filer.new_combine('final.index', 'base.index', file.name)
 
 
 def is_valid(url):
