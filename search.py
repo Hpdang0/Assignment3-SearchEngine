@@ -1,21 +1,30 @@
 from collections import defaultdict
 import indexfiler
+import math
 
 class Search():
     def __init__(self, index_path: str, ids_path: str):
         self.index_path = index_path
         self.ids_path = ids_path
 
-    def ranking(self, queries, intersecting_docs, index_dict):
+    def ranking(self, queries, intersecting_docs, index_dict, max_docID):
         # we can change this ranking func later
         weights = defaultdict(int)
+
+        # idf is essentially the raw number of occurrences at this point
+        
         for q in queries:
-            for x in index_dict[q]: # for each pair
-                if x[0] in intersecting_docs:
-                    weights[x[0]] += x[1]
+            for x in index_dict[q]: # for each pair (25239, 1) docID and number of times that token appears in the doc
+                if x[0] in intersecting_docs: # x[1] is the term freq for that document
+                    weights[x[0]] += self.tf(x[1]) * self.idf(len(index_dict[q]), max_docID) # weight[this doc ID] += by the term freq (in this doc) * idf
         
         return sorted(weights.keys(), key = lambda x: weights[x], reverse = True) # largest to smallest
 
+    def tf(self, raw_count):
+        return math.log(1 + raw_count, 10)
+
+    def idf(self, doc_count, max_docID):
+        return math.log( (max_docID / (doc_count)) , 10)
 
     def search(self, tokens: [str]) -> [str]:
         # type r: list of urls
@@ -42,6 +51,15 @@ class Search():
         new_list = set()
         intersection_docs = set([tup[0] for tup in index_dict[sorted_tokens.pop(0)]])
                                                             # ^ take out the first token
+
+        max_docID = max(intersection_docs) # this is the N in the idf equation
+
+        # idf = defaultdict(int) # inverse document frequency (to be passed to the ranking helper function)
+
+        # for token in sorted_tokens:
+        #     for x in index_dict[token]:
+        #         idf[token] += x[1]       # this is essentially the raw frequency
+
         for token in sorted_tokens: # going from least associated docIDs to most
             for x in index_dict[token]: # for each pair associated with the token
                 if x[0] in intersection_docs: # if the doc id is in the intersection_docs, we should add it
@@ -51,7 +69,7 @@ class Search():
         # basically, ^ the intersection_docs should get smaller because we intersect it with things that are already in
         # it but not necessarily everything in it
 
-        results_scored = self.ranking(tokens, intersection_docs, index_dict) # should get a list of sorted queries
+        results_scored = self.ranking(tokens, intersection_docs, index_dict, max_docID) # should get a list of sorted queries
 
         results_scored = results_scored[:5]
         doc_ids = dict()
