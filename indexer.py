@@ -109,11 +109,13 @@ if __name__ == '__main__':
 
                 # Compare similarity to last 5 pages we crawled in
                 similar = False
-                for url_token_pair in cache:
+                for url_freq_pair in cache:
                     # print(frequency, url_token_pair[1], sep='\n')
-                    if Similarity(frequency, url_token_pair[1], SIMHASH_THRESH):
+                    # print(url_freq_pair[1])
+                    if Similarity(frequency, url_freq_pair[1], SIMHASH_THRESH):
                         similar = True
-                        print('{:.2f} [SKIPPING] Similarity found between these two urls. Skipping the second url...\n{0} with tokens...\n{1}\n\n{2} with tokens...\n{3}\n'.format(time.time() - start, url_token_pair[0], url_token_pair[1], url, frequency[0]))
+                        print('{0:.2f} [SKIPPING] Similarity found between these two urls. Skipping the second url...\n{1}\n{2}\n'.format(time.time() - start, url_freq_pair[0], url))
+
                         break
                 # ------------------------ End filter
 
@@ -150,7 +152,7 @@ if __name__ == '__main__':
                     
                     current_doc_id += 1
                 
-                frequency.clear()
+                # frequency.clear()
 
         
         #here is where we would put the "HELPER"
