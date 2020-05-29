@@ -18,9 +18,11 @@ def merge_indexes():
 
     file_list = os.scandir('.') # list of files in the directory (their names)
     for file in file_list:
-        if file.name.endswith('.index') and 'tmp_' in file.name:
+        count = 0
+        if file.name.endswith('.index') and 'tmp_{}.index'.format(0) in file.name:
             print('Merging {} with final.index...'.format('tmp_{}.index'.format(current_tmp_index)))
-            filer.new_combine('final.index', 'tmp_{}.index'.format(current_tmp_index), 'tmp_{}.index'.format(current_tmp_index + 1))
+            filer.new_combine('final.index', 'tmp_{}.index'.format(count), 'tmp_{}.index'.format(count + 1))
+            count += 1
 
 if __name__ == '__main__':
     # Class setup
@@ -31,7 +33,6 @@ if __name__ == '__main__':
     current_tmp_index = 0
     current_tmp_ids = 0
     write_threshhold = 12582944 # this is how many documents we go before writing to the file and clearing our local index
-
     # Helper variables
     index = defaultdict(list)
     doc_ids = defaultdict(int)
@@ -108,7 +109,7 @@ if __name__ == '__main__':
     filer.ids_to_file(doc_ids, 'tmp_{}.ids'.format(current_tmp_ids))
 
     print('{:.2f} Processed up to doc_id: {}\nName: {}\nIndex Size: {}\nUnique Tokens: {}\n'.format(time.time() - start, current_doc_id, filename, sys.getsizeof(index), total_unique_tokens))
-
+    
     # Merging of indexes
     print('Merging indexes...\n')
     merge_indexes()

@@ -44,10 +44,9 @@ class IndexFiler():
                 lineB = file_b.readline()
                 
                 while True:  
-                    #keyA, doc_countA, postingA = lineA.split('|')
-                    #keyB, doc_countB, postingB = lineB.split('|')
                     if lineA == "":
-                        print('process done')
+                        #debug purpose
+                        #print('process done')
                         final_file.close()
                         break
                     elif lineB == "":
@@ -58,12 +57,14 @@ class IndexFiler():
                         keyB, doc_countB, postingB = lineB.split('|')
                         #Checking if A is the earlier term & adding it into index
                         if keyA < keyB:
-                            print('A', keyA, keyB)
+                            #print debug purpose
+                            #print('A', keyA, keyB)
                             final_file.write(lineA)
                             lineA = file_a.readline()
                         #Checking if B is the earlier term & adding it into index
                         elif keyA > keyB:
-                            print('B', keyA, keyB)
+                            #print debug purpose
+                            #print('B', keyA, keyB)
                             final_file.write(lineB)
                             lineB = file_b.readline()
                         #Checking if A and B are the same and combining them
@@ -71,16 +72,30 @@ class IndexFiler():
                             postings_parsedA = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in postingA.split())]
                             postings_parsedB = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in postingB.split())]
                             final_dict[keyA.rstrip()] = postings_parsedA + postings_parsedB
-                            print("combining term", keyA)
+                            #printdebug purpose
+                            #print("combining term", keyA)
                             posting_str = ' '.join(','.join(str(p) for p in pair) for pair in final_dict[keyA.rstrip()])
                             final_file.write('{key} | {doc_count} | {posting_str}\n'.format(key=keyA, doc_count= doc_countA + doc_countB, posting_str=posting_str))
                             final_dict.clear()
                             lineA = file_a.readline()
                             lineB = file_b.readline()
                     else:
-                        final_file.write(str(int(lineA) + int(lineB)) + '\n')
+                        #originally used to count line from document but inaccurate
+                        #final_file.write(str(int(lineA) + int(lineB)) + '\n')
                         lineA = file_a.readline()
                         lineB = file_b.readline()
+
+                
+                with open("temp.index", 'r', encoding='utf-8') as f:
+                    file_lines = f.readlines()
+                with open("temp.index", 'r', encoding='utf-8') as f:
+                    with open("final.index", "w", encoding='utf-8') as f1:
+                        f1.write(str(len(file_lines))+ '\n')
+                        for line in f:
+                            f1.write(line)
+        
+                f1.close()
+                f.close()
 
     def combine(self, final_file_name:str, staged_filepath):
         stoppoint = 300
@@ -91,7 +106,6 @@ class IndexFiler():
                 key, posting = line.split('|')
                 postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
                 staged_dict[key.rstrip()] = postings_parsed
-
 
         tmp_dict = dict()
         temp_file = open('temp.index', 'w', encoding='utf-8')
