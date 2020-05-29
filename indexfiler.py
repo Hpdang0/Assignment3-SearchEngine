@@ -15,10 +15,9 @@ class IndexFiler():
     def index_to_file(self, index:dict, filepath:str):
     # Writes index to file so it can be later parsed with from_file
         with open(filepath, 'w', encoding='utf-8') as file:
-            file.write(str(len(index)) + '\n')
             for key, posting in sorted(index.items()):
                 posting_str = ' '.join(','.join(str(p) for p in pair) for pair in posting)
-                file.write('{key} | {doc_count} | {posting_str}\n'.format(key=key, posting_str=posting_str, doc_count=len(posting)))
+                file.write('{key} | {posting_str}\n'.format(key=key, posting_str=posting_str))
 
     def ids_from_file(self, filepath: str) -> dict:
         # Retrieves the doc_id:url pair and return a dict of it
@@ -39,7 +38,7 @@ class IndexFiler():
         final_dict = dict()
         with open(staged_filepath, 'r', encoding='utf-8') as file_a:
             with open(staged_filepath1, 'r', encoding='utf-8') as file_b:
-                final_file = open('temp.index', 'w', encoding='utf-8')
+                final_file = open('final.index', 'w', encoding='utf-8')
                 lineA = file_a.readline()
                 lineB = file_b.readline()
                 
@@ -53,8 +52,8 @@ class IndexFiler():
                         final_file.write(lineA)
                         lineA = file_a.readline()
                     elif '|' in lineA:
-                        keyA, doc_countA, postingA = lineA.split('|')
-                        keyB, doc_countB, postingB = lineB.split('|')
+                        keyA, postingA = lineA.split('|')
+                        keyB, postingB = lineB.split('|')
                         #Checking if A is the earlier term & adding it into index
                         if keyA < keyB:
                             #print debug purpose
@@ -73,9 +72,9 @@ class IndexFiler():
                             postings_parsedB = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in postingB.split())]
                             final_dict[keyA.rstrip()] = postings_parsedA + postings_parsedB
                             #printdebug purpose
-                            #print("combining term", keyA)
+                            print("combining term", keyA)
                             posting_str = ' '.join(','.join(str(p) for p in pair) for pair in final_dict[keyA.rstrip()])
-                            final_file.write('{key} | {doc_count} | {posting_str}\n'.format(key=keyA, doc_count= doc_countA + doc_countB, posting_str=posting_str))
+                            final_file.write('{key} | {posting_str}\n'.format(key=keyA, posting_str=posting_str))
                             final_dict.clear()
                             lineA = file_a.readline()
                             lineB = file_b.readline()
@@ -84,62 +83,6 @@ class IndexFiler():
                         #final_file.write(str(int(lineA) + int(lineB)) + '\n')
                         lineA = file_a.readline()
                         lineB = file_b.readline()
-
-                
-                with open("temp.index", 'r', encoding='utf-8') as f:
-                    file_lines = f.readlines()
-                with open("temp.index", 'r', encoding='utf-8') as f:
-                    with open("final.index", "w", encoding='utf-8') as f1:
-                        f1.write(str(len(file_lines))+ '\n')
-                        for line in f:
-                            f1.write(line)
-        
-                f1.close()
-                f.close()
-
-    def combine(self, final_file_name:str, staged_filepath):
-        stoppoint = 300
-        i = 0
-        staged_dict = dict()
-        with open(staged_filepath, 'r', encoding='utf-8') as staged_file:
-            for line in staged_file:
-                key, posting = line.split('|')
-                postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
-                staged_dict[key.rstrip()] = postings_parsed
-
-        tmp_dict = dict()
-        temp_file = open('temp.index', 'w', encoding='utf-8')
-        with open(final_file_name, 'r', encoding='utf-8') as final_file:
-            for line in final_file:
-                key, posting = line.split('|')
-                postings_parsed = [[int(p[0]), int(p[1])] for p in (pair.split(',') for pair in posting.split())]
-                tmp_dict[key.rstrip()] = postings_parsed
-                if key.rstrip() in staged_dict.keys():
-                    tmp_dict[key.rstrip()] += staged_dict[key.rstrip()]
-                    del staged_dict[key.rstrip()]
-                i+=1
-                if i >= stoppoint: # we're stopping for a minute
-                    stoppoint+=i
-                    for key, posting in sorted(tmp_dict.items()): #writing to a temp file
-                        posting_str = ' '.join(','.join(str(p) for p in pair) for pair in posting)
-                        temp_file.write('{key} | {posting_str}\n'.format(key=key, posting_str=posting_str))
-                    tmp_dict.clear()
-        
-        for key, posting in sorted(staged_dict.items()): #writing to a temp file
-            posting_str = ' '.join(','.join(str(p) for p in pair) for pair in posting)
-            temp_file.write('{key} | {posting_str}\n'.format(key=key, posting_str=posting_str))
-        tmp_dict.clear()
-
-
-        with open("temp.index", 'r', encoding='utf-8') as f:
-            with open("final.index", "w", encoding='utf-8') as f1:
-                for line in f:
-                    f1.write(line)
-        
-        f1.close()
-        f.close()
-        staged_file.close()
-
 
     def bsearch_file(self, path, query):
     # Given a file path and a query, perform a binary search and its posting
