@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 from nltk.tokenize import word_tokenize,RegexpTokenizer
 from nltk.stem import PorterStemmer,WordNetLemmatizer
+from collections import defaultdict
 
 ps = PorterStemmer()
 lm = WordNetLemmatizer()
@@ -17,7 +18,7 @@ class Tokenizer():
         stopwords.append(word)
 
     def tokenize_index(self, text: str, encoding: str) -> [str]:
-        token_list = []
+        token_list = defaultdict(int)
         soup = BeautifulSoup(text, features="lxml", from_encoding=encoding)
         ## using nltk tokenizer
         ## for debugging ( some words are joined togather my the parser )
@@ -32,7 +33,7 @@ class Tokenizer():
             if len(word)in range(2,25):
                 if word not in self.stopwords and not word.isnumeric():
                     # print(word)
-                    token_list.append(word)
+                    token_list[word] += 1
         return token_list
 
     def tokenize_query(self, text: str) -> [str]:
