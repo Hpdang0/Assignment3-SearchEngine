@@ -2,6 +2,7 @@ class IndexFiler():
     def __init__(self):
         pass
     
+
     def index_from_file(self, filepath: str) -> dict:
     # Converts a file into a usable index
         index_dict = dict()
@@ -12,12 +13,19 @@ class IndexFiler():
                 index_dict[key.rstrip()] = postings_parsed    
         return index_dict
     
+    
     def index_to_file(self, index:dict, filepath:str):
     # Writes index to file so it can be later parsed with from_file
         with open(filepath, 'w', encoding='utf-8') as file:
             for key, posting in sorted(index.items()):
-                posting_str = ' '.join(','.join(str(p) for p in pair) for pair in posting)
-                file.write('{key} | {posting_str}\n'.format(key=key, posting_str=posting_str))
+                docs = []
+                for doc in posting:
+                    id = str(doc[0])
+                    freq = str(doc[1][0])
+                    mode = doc[1][1]
+                    docs.append(','.join([id, freq, mode]))
+                # posting_str = ' '.join(','.join(str(p) for p in pair) for pair in posting)
+                file.write('{key} | {posting_str}\n'.format(key=key, posting_str=' '.join(docs)))
 
     def ids_from_file(self, filepath: str) -> dict:
         # Retrieves the doc_id:url pair and return a dict of it
@@ -28,11 +36,13 @@ class IndexFiler():
                 ids_dict[int(pair[0])] = pair[1]    
         return ids_dict
 
+
     def ids_to_file(self, ids:dict, filepath: str) -> dict:
         # Writes a doc_ids:url pair to a file
         with open(filepath, 'w', encoding='utf-8') as file:
             for id, url in ids.items():
                 file.write('{} {}\n'.format(id, url))
+
 
     def new_combine(self, final_file_name:str, staged_filepath, staged_filepath1):
         final_dict = dict()

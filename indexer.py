@@ -12,7 +12,7 @@ import time
 from similar import Similarity
 from urllib.parse import urlparse
 
-CORPUS_PATH = '\\TEST'
+CORPUS_PATH = '\\DEV'
 LOW_VALUE_THRESHOLD = 10
 SIMHASH_THRESH = 0.9
 
@@ -20,16 +20,19 @@ _FRAGMENT = r'[#].*'
 FRAGMENT = re.compile(_FRAGMENT)
 
 def merge_indexes():
-    filer = indexfiler.IndexFiler()
-    f = open("final.index", 'w')
-    f.close()
+    pass
+    # filer = indexfiler.IndexFiler()
+    # f = open("final.index", 'w')
+    # f.close()
 
-    file_list = os.scandir('.') # list of files in the directory (their names)
-    os.rename("tmp_0.index", "base.index")
-    for file in file_list: 
-        if file.name.endswith('.index') and 'tmp_' in file.name:
-            print('Merging {} with final.index...'.format(file.name))
-            filer.new_combine('final.index', 'base.index', file.name)
+    # file_list = os.scandir('.') # list of files in the directory (their names)
+    # if os.path.exists('base.index'):
+    #     os.remove('base.index')
+    # os.rename("tmp_0.index", "base.index")
+    # for file in file_list: 
+    #     if file.name.endswith('.index') and 'tmp_' in file.name:
+    #         print('Merging {} with final.index...'.format(file.name))
+    #         filer.new_combine('final.index', 'base.index', file.name)
 
 
 def is_valid(url):
@@ -52,10 +55,6 @@ def is_valid(url):
         raise
 
 if __name__ == '__main__':
-    print('Merging indexes...\n')
-    merge_indexes()
-
-if __name__ == '__main1__':
     # Class setup
     tokenizer = tokenizer.Tokenizer()
     filer = indexfiler.IndexFiler()
@@ -102,12 +101,12 @@ if __name__ == '__main1__':
                 # -------------- Filtering done here
                 # Determine if indexing is worthwhile
                 low_value_page = False
-                if sum(frequency.values()) < LOW_VALUE_THRESHOLD:
+                if sum(val[0] for val in frequency.values()) < LOW_VALUE_THRESHOLD:
                     low_value_page = True
                     try:
-                        print('{0:.2f} [SKIPPING] URL found to be of low value: {1}\n{2} with tokens...\n{3}\n'.format(time.time() - start, sum(frequency.values()), url, frequency))
+                        print('{0:.2f} [SKIPPING] URL found to be of low value: {1}\n{2} with tokens...\n{3}\n'.format(time.time() - start, sum(frequency.values()), url, frequency[0]))
                     except:
-                        print('{0:.2f} [SKIPPING] URL found to be of low value: {1}\n{2}\n'.format(time.time() - start, sum(frequency.values()), url))
+                        print('{0:.2f} [SKIPPING] URL found to be of low value: {1}\n{2}\n'.format(time.time() - start, sum(val[0] for val in frequency.values()), url))
 
                 # Compare similarity to last 5 pages we crawled in
                 similar = False
@@ -115,7 +114,7 @@ if __name__ == '__main1__':
                     # print(frequency, url_token_pair[1], sep='\n')
                     if Similarity(frequency, url_token_pair[1], SIMHASH_THRESH):
                         similar = True
-                        print('{:.2f} [SKIPPING] Similarity found between these two urls. Skipping the second url...\n{0} with tokens...\n{1}\n\n{2} with tokens...\n{3}\n'.format(time.time() - start, url_token_pair[0], url_token_pair[1], url, frequency))
+                        print('{:.2f} [SKIPPING] Similarity found between these two urls. Skipping the second url...\n{0} with tokens...\n{1}\n\n{2} with tokens...\n{3}\n'.format(time.time() - start, url_token_pair[0], url_token_pair[1], url, frequency[0]))
                         break
                 # ------------------------ End filter
 

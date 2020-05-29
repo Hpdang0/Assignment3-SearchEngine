@@ -13,13 +13,13 @@ lm = WordNetLemmatizer()
 rtk = RegexpTokenizer(r'[a-zA-Z0-9]+')
 
 # These values will be added to the tokens as frequency
-WEIGHT_H02 = 1
-WEIGHT_H36 = 2
-WEIGHT_BOLD = 3
-WEIGHT_HYPERLINK = 4
-WEIGHT_ITALICIZED = 5
-WEIGHT_LIST = 6
-WEIGHT_NORMAL = None
+WEIGHT_H02 = '1'
+WEIGHT_H36 = '2'
+WEIGHT_BOLD = '3'
+WEIGHT_HYPERLINK = '4'
+WEIGHT_ITALICIZED = '5'
+WEIGHT_LIST = '6'
+WEIGHT_NORMAL = ''
 
 _ALPHA_NUM = r'^[a-zA-Z0-9]*$' 
 ALPHA_NUM = re.compile(_ALPHA_NUM)
@@ -41,7 +41,7 @@ class Tokenizer():
             for word in text.split():
                 # print(word, mod)
                 freq[word][0] += 1
-                freq[word][1] += str(mod)
+                freq[word][1] += mod
 
     def tokenize_index(self, text: str, encoding: str) -> [str]:
         frequency = defaultdict(pair)
@@ -57,7 +57,7 @@ class Tokenizer():
 
         if content is not None:
             # print('Implicit Parsing...\n')
-            self.parse_for(frequency, content, 'p', WEIGHT_P)
+            self.parse_for(frequency, content, 'p', WEIGHT_NORMAL)
             self.parse_for(frequency, content, re.compile(r'^h[0-2]$'), WEIGHT_H02)
             self.parse_for(frequency, content, re.compile(r'^h[3-6]$'), WEIGHT_H36)
             self.parse_for(frequency, content, re.compile(r'^(b|strong)$'), WEIGHT_BOLD)
@@ -68,7 +68,7 @@ class Tokenizer():
        # If not, look for commmon html tags in entire soup
         else:
             # print('Explicit parsing...\n')
-            self.parse_for(frequency, soup, 'p', WEIGHT_P)
+            self.parse_for(frequency, soup, 'p', WEIGHT_NORMAL)
             self.parse_for(frequency, soup, re.compile(r'^h[0-2]$'), WEIGHT_H02)
             self.parse_for(frequency, soup, re.compile(r'^h[3-6]$'), WEIGHT_H36)
             self.parse_for(frequency, soup, re.compile(r'^(b|strong)$'), WEIGHT_BOLD)
@@ -80,9 +80,9 @@ class Tokenizer():
         if len(frequency) == 0 and soup is not None:
             # print('Full parsing...\n')
             for word in soup.get_text(strip=True,separator = ' ').split():
-                frequency[word] += 1
+                frequency[word][0] += 1
 
-        stemmed_frequency = defaultdict(int)
+        stemmed_frequency = defaultdict(pair)
         for word, freq in frequency.items():
             if word in self.stopwords or ALPHA_NUM.search(word) is None or word.isnumeric() or self.is_hex(word):
                 continue
@@ -90,7 +90,8 @@ class Tokenizer():
             ## not sure if we should use only lower case as "Apple" is different from "apple"
             stemmed = ps.stem(word.lower())
             if len(word)in range(2,25):
-                stemmed_frequency[stemmed.rstrip()] += freq
+                stemmed_frequency[stemmed.rstrip()][0] += freq[0]
+                stemmed_frequency[stemmed.rstrip()][1] += freq[1]
 
         # print(stemmed_frequency)
         return stemmed_frequency

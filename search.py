@@ -2,6 +2,14 @@ from collections import defaultdict
 import indexfiler
 import math
 
+WEIGHT_H02 = '1'
+WEIGHT_H36 = '2'
+WEIGHT_BOLD = '3'
+WEIGHT_HYPERLINK = '4'
+WEIGHT_ITALICIZED = '5'
+WEIGHT_LIST = '6'
+WEIGHT_NORMAL = ''
+
 class Search():
     def __init__(self, index_path: str, ids_path: str, max_docID: int):
         self.index_path = index_path

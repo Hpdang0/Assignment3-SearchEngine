@@ -36,9 +36,9 @@ def create_simhash(words_dict):
 
         for i in range(hash.digest_size * 8):
             if bool(int(hashed_bytes[i])):
-                weights[i] += words_dict[word]
+                weights[i] += words_dict[word][0]
             else:
-                weights[i] -= words_dict[word]
+                weights[i] -= words_dict[word][0]
         
     return normalize_weights(weights)
 
