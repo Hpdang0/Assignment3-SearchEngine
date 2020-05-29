@@ -115,6 +115,13 @@ def ensure_legal(i: str) -> bool:
     return True
 
 if __name__ == '__main__':
+    max_doc_id = 0
+    with open("tmp_0.ids", 'r', encoding='utf-8') as file:
+        first_line = file.readline()
+        for last_line in file:
+            pass
+    lis = last_line.split(' ', 1)
+    max_doc_id = int(lis[0])
     tokenizer = tokenizer.Tokenizer()
-    search = search.Search('final.index', 'final.ids')
+    search = search.Search('final.index', 'final.ids', max_doc_id)
     app.run_server(debug=True)
