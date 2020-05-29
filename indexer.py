@@ -20,7 +20,7 @@ def merge_indexes():
     for file in file_list:
         if file.name.endswith('.index') and 'tmp_' in file.name:
             print('Merging {} with final.index...'.format('tmp_{}.index'.format(current_tmp_index)))
-            filer.new_combine('final.index', 'tmp_{}.index'.format(current_tmp_index), 'tmp_{}.index'.format(current_tmp_index))
+            filer.new_combine('final.index', 'tmp_{}.index'.format(current_tmp_index), 'tmp_{}.index'.format(current_tmp_index + 1))
 
 if __name__ == '__main__':
     # Class setup
