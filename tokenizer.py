@@ -22,6 +22,7 @@ WEIGHT_LIST = '6'
 WEIGHT_TITLE = '7'
 WEIGHT_NORMAL = ''
 
+
 _ALPHA_NUM = r'^[a-zA-Z0-9]*$' 
 ALPHA_NUM = re.compile(_ALPHA_NUM)
 
@@ -37,6 +38,9 @@ class Tokenizer():
         stopwords.append(word)
 
     def parse_for(self, freq, soup, query, mod):
+        # if mod == WEIGHT_TITLE:
+        #     print(soup.find_all(query))
+
         for iter in soup.find_all(query):
             text = iter.get_text(strip=True,separator = ' ')
             for word in text.split():
@@ -65,7 +69,7 @@ class Tokenizer():
             self.parse_for(frequency, content, re.compile(r'^(i|em)$'), WEIGHT_ITALICIZED)
             self.parse_for(frequency, content, re.compile(r'^(li)$'), WEIGHT_LIST)
             self.parse_for(frequency, content, 'a', WEIGHT_HYPERLINK)
-            self.parse_for(frequency, content, 'title', WEIGHT_TITLE)
+            
                 
        # If not, look for commmon html tags in entire soup
         else:
@@ -76,7 +80,9 @@ class Tokenizer():
             self.parse_for(frequency, soup, re.compile(r'^(b|strong)$'), WEIGHT_BOLD)
             self.parse_for(frequency, soup, re.compile(r'^(i|em)$'), WEIGHT_ITALICIZED)
             self.parse_for(frequency, soup, 'a', WEIGHT_HYPERLINK)
-            self.parse_for(frequency, soup, 'title', WEIGHT_TITLE)
+        
+
+        self.parse_for(frequency, soup, 'title', WEIGHT_TITLE)
 
         # If we managed to find absolutely no html tags, just extract the entire body
         if len(frequency) == 0 and soup is not None:
