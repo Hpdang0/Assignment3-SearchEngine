@@ -1,3 +1,5 @@
+import os
+
 class IndexFiler():
     def __init__(self):
         pass
@@ -12,7 +14,6 @@ class IndexFiler():
                 postings_parsed = [[int(p[0]), float(p[1])] for p in (pair.split(',') for pair in posting.split())]
                 index_dict[key.rstrip()] = postings_parsed    
         return index_dict
-    
     
     def index_to_file(self, index:dict, filepath:str):
     # Writes index to file so it can be later parsed with from_file
@@ -44,55 +45,53 @@ class IndexFiler():
                 file.write('{} {}\n'.format(id, url))
 
 
-    def new_combine(self, final_file_name:str, staged_filepath, staged_filepath1):
+    def new_combine(self, staged_filepath):
         final_dict = dict()
-        with open(staged_filepath, 'r', encoding='utf-8') as file_a:
-            with open(staged_filepath1, 'r', encoding='utf-8') as file_b:
-                final_file = open('final.index', 'w', encoding='utf-8')
+        with open('final.index', 'r+', encoding='utf-8') as file_a: #tmp_0, tmp_0 + tmp_1, tmp_0 + tmp_1 + tmp_2
+            with open(staged_filepath, 'r', encoding='utf-8') as file_b: #tmp_1, tmp_2, tmp_3
+                temp_file = open('temp.index', 'w', encoding='utf-8')
                 lineA = file_a.readline()
                 lineB = file_b.readline()
-                
                 while True:  
                     if lineA == "":
                         #debug purpose
                         #print('process done')
-                        final_file.close()
+                        temp_file.close()
                         break
                     elif lineB == "":
-                        final_file.write(lineA)
+                        temp_file.write(lineA)
                         lineA = file_a.readline()
-                    elif '|' in lineA:
+                    else:
                         keyA, postingA = lineA.split(' | ')
                         keyB, postingB = lineB.split(' | ')
                         #Checking if A is the earlier term & adding it into index
                         if keyA < keyB:
                             #print debug purpose
                             #print('A', keyA, keyB)
-                            final_file.write(lineA)
+                            temp_file.write(lineA)
                             lineA = file_a.readline()
                         #Checking if B is the earlier term & adding it into index
                         elif keyA > keyB:
                             #print debug purpose
                             #print('B', keyA, keyB)
-                            final_file.write(lineB)
+                            temp_file.write(lineB)
                             lineB = file_b.readline()
                         #Checking if A and B are the same and combining them
                         elif keyA == keyB:
-                            postings_parsedA = [[int(p[0]), float(p[1])] for p in (pair.split(',') for pair in postingA.split())]
-                            postings_parsedB = [[int(p[0]), float(p[1])] for p in (pair.split(',') for pair in postingB.split())]
+                            postings_parsedA = [[int(p[0]), int(p[1]), str(p[2])] for p in (pair.split(',') for pair in postingA.split())]
+                            postings_parsedB = [[int(p[0]), int(p[1]), str(p[2])] for p in (pair.split(',') for pair in postingB.split())]
                             final_dict[keyA.rstrip()] = postings_parsedA + postings_parsedB
                             #printdebug purpose
                             # print("combining term", keyA)
-                            posting_str = ' '.join(','.join(str(p) for p in pair) for pair in final_dict[keyA.rstrip()])
-                            final_file.write('{key} | {posting_str}\n'.format(key=keyA, posting_str=posting_str))
+                            posting_str = ' '.join(','.join(str(t) for t in tri) for tri in final_dict[keyA.rstrip()])
+                            temp_file.write('{key} | {posting_str}\n'.format(key=keyA, posting_str=posting_str))
                             final_dict.clear()
                             lineA = file_a.readline()
                             lineB = file_b.readline()
-                    else:
-                        #originally used to count line from document but inaccurate
-                        #final_file.write(str(int(lineA) + int(lineB)) + '\n')
-                        lineA = file_a.readline()
-                        lineB = file_b.readline()
+        os.remove('final.index')
+        os.rename('temp.index', 'final.index')
+                
+                    
 
 
     def bsearch_file(self, path, query):

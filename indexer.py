@@ -21,18 +21,16 @@ FRAGMENT = re.compile(_FRAGMENT)
 
 def merge_indexes():
     filer = indexfiler.IndexFiler()
-    f = open("final.index", 'w')
-    f.close()
-
+    if os.path.exists('final.index'):
+        os.remove('final.index')
+    os.rename("tmp_0.index", "final.index")
     file_list = os.scandir('.') # list of files in the directory (their names)
-    if os.path.exists('base.index'):
-        os.remove('base.index')
-    os.rename("tmp_0.index", "base.index")
     for file in file_list: 
         if file.name.endswith('.index') and 'tmp_' in file.name:
             print('Merging {} with final.index...'.format(file.name))
-            filer.new_combine('final.index', 'base.index', file.name)
-
+            filer.new_combine(file.name)
+            #os.remove(file.name)
+            
 
 def is_valid(url):
     try:
@@ -62,7 +60,7 @@ if __name__ == '__main__':
     # File Writing setup
     current_tmp_index = 0
     current_tmp_ids = 0
-    write_threshhold = 6291472
+    write_threshhold = 6291472 #6291472
     # write_threshhold = 12582944 # this is how many documents we go before writing to the file and clearing our local index
     # Helper variables
     index = defaultdict(list)
@@ -109,18 +107,19 @@ if __name__ == '__main__':
 
                 # Compare similarity to last 5 pages we crawled in
                 similar = False
-                for url_freq_pair in cache:
-                    # print(frequency, url_token_pair[1], sep='\n')
-                    # print(url_freq_pair[1])
-                    if Similarity(frequency, url_freq_pair[1], SIMHASH_THRESH):
+                cache1 = None
+                for curl, cfreq, ccache in cache:
+                    cache2 = ccache
+                    sim_result, cache1, cache2 = Similarity(frequency, cfreq, SIMHASH_THRESH, cache1=cache1, cache2=ccache)
+                    
+                    if sim_result:
                         similar = True
-                        print('{0:.2f} [SKIPPING] Similarity found between these two urls. Skipping the second url...\n{1}\n{2}\n'.format(time.time() - start, url_freq_pair[0], url))
-
+                        print('{0:.2f} [SKIPPING] Similarity found between these two urls. Skipping the second url...\n{1}\n{2}\n'.format(time.time() - start, curl, url))
                         break
                 # ------------------------ End filter
 
                 # Remember this url in our cache
-                cache.append((url, frequency))
+                cache.append((url, frequency, cache1))
 
                 # Actually add to our index
                 if not similar and not low_value_page:
