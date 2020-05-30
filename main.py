@@ -102,7 +102,11 @@ def update_protect_num_bins(n_clicks):
     
     #search the contents of default
     # return f'SEARCHED FOR: "{default}"!{nl}{answers}{nl}{the_time}{nl}'
-    return f"Search results:{nl}{nl}{nl.join(results)}{nl}{the_time}"
+    # return '\n'.join('{:03f}\t{}'.format(url_weight[1], url_weight[0]) for url_weight in results[:10])  # DEBUG
+    # return f"Search results:{nl}{nl}{nl.join(results)}{nl}{the_time}"
+        
+    return '\n'.join('\t{}'.format(url_weight[0]) for url_weight in results[:10])  # NORMAL
+
 
 #-------------------------------------------------------------------------------------
 

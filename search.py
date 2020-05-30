@@ -96,7 +96,7 @@ class Search():
         results_scored = self.ranking(tokens, intersection_docs, index_dict) # should get a list of sorted queries
         # print(results_scored)
 
-        results_scored = results_scored[:5]
+        results_scored = results_scored
         doc_ids = dict()
         with open("final.ids", 'r', encoding='utf-8') as file:
             for line in file:
