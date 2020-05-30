@@ -75,7 +75,7 @@ class Search():
 
         for line in lines:
             key, posting = line.split('|')
-            postings_parsed = [[int(p[0]), int(p[1]), str(p[2])] for p in (pair.split(',') for pair in posting.split())]
+            postings_parsed = [[int(p[0]), float(p[1]), str(p[2])] for p in (pair.split(',') for pair in posting.split())]
             index_dict[key.rstrip()] = postings_parsed
         
         sorted_tokens = sorted(tokens, key = lambda token: len(index_dict[token])) # sorted by amount of associated docIDs
