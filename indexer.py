@@ -21,18 +21,16 @@ FRAGMENT = re.compile(_FRAGMENT)
 
 def merge_indexes():
     filer = indexfiler.IndexFiler()
-    f = open("final.index", 'w')
-    f.close()
-
+    if os.path.exists('final.index'):
+        os.remove('final.index')
+    os.rename("tmp_0.index", "final.index")
     file_list = os.scandir('.') # list of files in the directory (their names)
-    if os.path.exists('base.index'):
-        os.remove('base.index')
-    os.rename("tmp_0.index", "base.index")
     for file in file_list: 
         if file.name.endswith('.index') and 'tmp_' in file.name:
             print('Merging {} with final.index...'.format(file.name))
-            filer.new_combine('final.index', 'base.index', file.name)
-
+            filer.new_combine(file.name)
+            #os.remove(file.name)
+            
 
 def is_valid(url):
     try:
@@ -62,7 +60,7 @@ if __name__ == '__main__':
     # File Writing setup
     current_tmp_index = 0
     current_tmp_ids = 0
-    write_threshhold = 6291472
+    write_threshhold = 6291472 #6291472
     # write_threshhold = 12582944 # this is how many documents we go before writing to the file and clearing our local index
     # Helper variables
     index = defaultdict(list)
