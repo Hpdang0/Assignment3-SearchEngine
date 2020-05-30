@@ -19,6 +19,7 @@ WEIGHT_BOLD = '3'
 WEIGHT_HYPERLINK = '4'
 WEIGHT_ITALICIZED = '5'
 WEIGHT_LIST = '6'
+WEIGHT_TITLE = '7'
 WEIGHT_NORMAL = ''
 
 _ALPHA_NUM = r'^[a-zA-Z0-9]*$' 
@@ -64,6 +65,7 @@ class Tokenizer():
             self.parse_for(frequency, content, re.compile(r'^(i|em)$'), WEIGHT_ITALICIZED)
             self.parse_for(frequency, content, re.compile(r'^(li)$'), WEIGHT_LIST)
             self.parse_for(frequency, content, 'a', WEIGHT_HYPERLINK)
+            self.parse_for(frequency, content, 'title', WEIGHT_TITLE)
                 
        # If not, look for commmon html tags in entire soup
         else:
@@ -74,17 +76,21 @@ class Tokenizer():
             self.parse_for(frequency, soup, re.compile(r'^(b|strong)$'), WEIGHT_BOLD)
             self.parse_for(frequency, soup, re.compile(r'^(i|em)$'), WEIGHT_ITALICIZED)
             self.parse_for(frequency, soup, 'a', WEIGHT_HYPERLINK)
-            
+            self.parse_for(frequency, soup, 'title', WEIGHT_TITLE)
 
         # If we managed to find absolutely no html tags, just extract the entire body
         if len(frequency) == 0 and soup is not None:
             # print('Full parsing...\n')
             for word in soup.get_text(strip=True,separator = ' ').split():
                 frequency[word][0] += 1
+                try:
+                    self.parse_for(frequency, content, 'title', WEIGHT_TITLE)
+                except:
+                    pass
 
         stemmed_frequency = defaultdict(pair)
         for word, freq in frequency.items():
-            if word in self.stopwords or ALPHA_NUM.search(word) is None or word.isnumeric() or self.is_hex(word):
+            if ALPHA_NUM.search(word) is None or word.isnumeric() or self.is_hex(word):
                 continue
             ## using nltk Porter Stemmer
             ## not sure if we should use only lower case as "Apple" is different from "apple"
@@ -106,12 +112,14 @@ class Tokenizer():
     def tokenize_query(self, text: str) -> [str]:
         stemmed_query = []
         for word in text.split():
-            if word in self.stopwords or ALPHA_NUM.search(word) is None or word.isnumeric() or self.is_hex(word):
+            print("'{}'".format(word))
+            if ALPHA_NUM.search(word) is None or word.isnumeric() or self.is_hex(word):
+                print('skipping {}'.format(word))
                 continue
             ## using nltk Porter Stemmer
             ## not sure if we should use only lower case as "Apple" is different from "apple"
             stemmed = ps.stem(word.lower())
             if len(word)in range(2,25):
                 stemmed_query.append(stemmed)
-        print('query: ' + "'" + stemmed + "'")
+        # print(stemmed_query)
         return stemmed_query

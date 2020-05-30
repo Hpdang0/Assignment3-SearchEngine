@@ -1,8 +1,10 @@
 import hashlib
 
 def Similarity(dict1, dict2, threshold):
-    # print(dict1, dict2)
-    if _compute_similarity(create_simhash(dict1), create_simhash(dict2)) >= threshold:
+    sim = _compute_similarity(create_simhash(dict1), create_simhash(dict2))
+    if sim >= threshold:
+        # print(dict1, dict2, sep='\n')
+        # print('Simiar at {}\n'.format(sim))
         return True
     return False
 
