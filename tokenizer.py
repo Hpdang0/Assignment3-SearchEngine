@@ -118,9 +118,9 @@ class Tokenizer():
     def tokenize_query(self, text: str) -> [str]:
         stemmed_query = []
         for word in text.split():
-            print("'{}'".format(word))
+            # print("'{}'".format(word))
             if ALPHA_NUM.search(word) is None or word.isnumeric() or self.is_hex(word):
-                print('skipping {}'.format(word))
+                # print('skipping {}'.format(word))
                 continue
             ## using nltk Porter Stemmer
             ## not sure if we should use only lower case as "Apple" is different from "apple"

@@ -2,13 +2,13 @@ from collections import defaultdict
 import indexfiler
 import math
 
-QWEIGHT_H02 = 4                                 #1
-QWEIGHT_H36 = 3                                 #2
-QWEIGHT_BOLD = 1                                #3
-QWEIGHT_HYPERLINK = 1                           #4
-QWEIGHT_ITALICIZED = .6                         #5
-QWEIGHT_LIST = .9                               #6
-QWEIGHT_TITLE = 10                              #7
+QWEIGHT_H02 = 10                                 #1
+QWEIGHT_H36 = 7                                 #2
+QWEIGHT_BOLD = 5                                #3
+QWEIGHT_HYPERLINK = 4                           #4
+QWEIGHT_ITALICIZED = 2                          #5
+QWEIGHT_LIST = 3                                #6
+QWEIGHT_TITLE = 100                              #7
 
 class Search():
     def __init__(self, index_path: str, ids_path: str, max_docID: int):
@@ -35,9 +35,9 @@ class Search():
             for x in index_dict[q]: # for each pair (25239, 1) docID and number of times that token appears in the doc
                 if x[0] in intersecting_docs: # x[1] is the term freq for that document
                     weights[x[0]] += self.tf(x[1], x[2], mode_map) * self.idf(len(index_dict[q]), self.max_docID) # weight[this doc ID] += by the term freq (in this doc) * idf
-                    print(x)
-        print('weights', sorted(weights.items(), key = lambda x: x[1], reverse = True))
-        return sorted(weights.keys(), key = lambda x: weights[x], reverse = True) # largest to smallest
+                    # print(x)
+        # print('weights', sorted(weights.items(), key = lambda x: x[1], reverse = True))
+        return sorted(weights.items(), key = lambda x: x[1], reverse = True) # largest to smallest
 
     def tf(self, freq, mode, mode_map):
         weight = 0
@@ -104,6 +104,6 @@ class Search():
                 doc_ids[int(id)] = url
         
         final_answer = []
-        for num in results_scored:
-            final_answer.append(doc_ids[num])
+        for pair in results_scored:
+            final_answer.append((doc_ids[pair[0]], pair[1]))
         return final_answer

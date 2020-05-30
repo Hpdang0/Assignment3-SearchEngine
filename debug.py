@@ -49,7 +49,8 @@ if __name__ == '__main__':
             print('No results found!')
         else:
             print('Results:')
-            for url in results:
-                print(url)
+            for url_weight in results:
+                print('{:03f}\t{}'.format(url_weight[1], url_weight[0]))    # Debug query results
+                # print('{}'.format(url_weight[0]))                         # Normal
 
         print()
