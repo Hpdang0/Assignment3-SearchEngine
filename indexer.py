@@ -109,18 +109,19 @@ if __name__ == '__main__':
 
                 # Compare similarity to last 5 pages we crawled in
                 similar = False
-                for url_freq_pair in cache:
-                    # print(frequency, url_token_pair[1], sep='\n')
-                    # print(url_freq_pair[1])
-                    if Similarity(frequency, url_freq_pair[1], SIMHASH_THRESH):
+                cache1 = None
+                for curl, cfreq, ccache in cache:
+                    cache2 = ccache
+                    sim_result, cache1, cache2 = Similarity(frequency, cfreq, SIMHASH_THRESH, cache1=cache1, cache2=ccache)
+                    
+                    if sim_result:
                         similar = True
-                        print('{0:.2f} [SKIPPING] Similarity found between these two urls. Skipping the second url...\n{1}\n{2}\n'.format(time.time() - start, url_freq_pair[0], url))
-
+                        print('{0:.2f} [SKIPPING] Similarity found between these two urls. Skipping the second url...\n{1}\n{2}\n'.format(time.time() - start, curl, url))
                         break
                 # ------------------------ End filter
 
                 # Remember this url in our cache
-                cache.append((url, frequency))
+                cache.append((url, frequency, cache1))
 
                 # Actually add to our index
                 if not similar and not low_value_page:

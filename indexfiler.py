@@ -13,7 +13,7 @@ class IndexFiler():
                 index_dict[key.rstrip()] = postings_parsed    
         return index_dict
     
-    
+
     def index_to_file(self, index:dict, filepath:str):
     # Writes index to file so it can be later parsed with from_file
         with open(filepath, 'w', encoding='utf-8') as file:
@@ -48,7 +48,7 @@ class IndexFiler():
         final_dict = dict()
         with open(staged_filepath, 'r', encoding='utf-8') as file_a:
             with open(staged_filepath1, 'r', encoding='utf-8') as file_b:
-                final_file = open('final.index', 'w', encoding='utf-8')
+                final_file = open(final_file_name, 'w', encoding='utf-8')
                 lineA = file_a.readline()
                 lineB = file_b.readline()
                 
@@ -61,7 +61,7 @@ class IndexFiler():
                     elif lineB == "":
                         final_file.write(lineA)
                         lineA = file_a.readline()
-                    elif '|' in lineA:
+                    else:
                         keyA, postingA = lineA.split(' | ')
                         keyB, postingB = lineB.split(' | ')
                         #Checking if A is the earlier term & adding it into index
@@ -78,21 +78,23 @@ class IndexFiler():
                             lineB = file_b.readline()
                         #Checking if A and B are the same and combining them
                         elif keyA == keyB:
-                            postings_parsedA = [[int(p[0]), float(p[1])] for p in (pair.split(',') for pair in postingA.split())]
-                            postings_parsedB = [[int(p[0]), float(p[1])] for p in (pair.split(',') for pair in postingB.split())]
-                            final_dict[keyA.rstrip()] = postings_parsedA + postings_parsedB
+                            postings_parsedA = [[int(p[0]), int(p[1]), str(p[2])] for p in (pair.split(',') for pair in postingA.split())]
+                            postings_parsedB = [[int(p[0]), int(p[1]), str(p[2])] for p in (pair.split(',') for pair in postingB.split())]
+                            final_dict[keyA] = postings_parsedA + postings_parsedB
                             #printdebug purpose
                             # print("combining term", keyA)
-                            posting_str = ' '.join(','.join(str(p) for p in pair) for pair in final_dict[keyA.rstrip()])
+                            posting_str = ' '.join(','.join(str(p) for p in tri) for tri in final_dict[keyA])
                             final_file.write('{key} | {posting_str}\n'.format(key=keyA, posting_str=posting_str))
                             final_dict.clear()
                             lineA = file_a.readline()
                             lineB = file_b.readline()
-                    else:
-                        #originally used to count line from document but inaccurate
-                        #final_file.write(str(int(lineA) + int(lineB)) + '\n')
-                        lineA = file_a.readline()
-                        lineB = file_b.readline()
+                    # else:
+                    #     #originally used to count line from document but inaccurate
+                    #     #final_file.write(str(int(lineA) + int(lineB)) + '\n')
+                    #     lineA = file_a.readline()
+                    #     lineB = file_b.readline()
+            
+                final_file.close()
 
 
     def bsearch_file(self, path, query):

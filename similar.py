@@ -1,12 +1,15 @@
 import hashlib
 
-def Similarity(dict1, dict2, threshold):
-    sim = _compute_similarity(create_simhash(dict1), create_simhash(dict2))
-    if sim >= threshold:
-        # print(dict1, dict2, sep='\n')
-        # print('Simiar at {}\n'.format(sim))
-        return True
-    return False
+def Similarity(dict1, dict2, threshold, cache1 = None, cache2 = None):
+    sim1 = create_simhash(dict1) if cache1 is None else cache1
+    sim2 = create_simhash(dict2) if cache2 is None else cache2
+
+    sim_val = _compute_similarity(sim1, sim2)
+
+    if sim_val >= threshold:
+        return True, sim1, sim2
+
+    return False, sim1, sim2
 
     
 def _compute_similarity(hash1, hash2):
